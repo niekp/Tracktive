@@ -14,5 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return \Illuminate\Support\Facades\Redirect::route('activities.index');
 });
+
+Route::resource('activities', \App\Http\Controllers\ActivityController::class);

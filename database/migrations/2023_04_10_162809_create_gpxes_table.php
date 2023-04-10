@@ -11,11 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('activities', function (Blueprint $table) {
+        Schema::create('gpxes', function (Blueprint $table) {
             $table->id();
-            $table->dateTime('date');
-            $table->string('type')->nullable();
+            $table->unsignedBigInteger('activity_id');
+            $table->string('file');
+            $table->integer('version');
             $table->timestamps();
+
+            $table->foreign('activity_id')->references('id')->on('activities')->onDelete('cascade');
+            $table->unique(['activity_id', 'version']);
         });
     }
 
@@ -24,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('activities');
+        Schema::dropIfExists('gpxes');
     }
 };
