@@ -1,0 +1,18 @@
+ActivityController
+    index
+    show
+
+Activity
+    type
+    date
+
+ActivityGpx
+    version
+    gpx
+
+ActivityPerson
+    activity
+    person
+
+Person
+    name
