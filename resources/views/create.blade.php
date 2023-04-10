@@ -12,6 +12,7 @@
 
         <div class="col-12">
             <button type="submit" class="btn btn-primary">Upload</button>
+            <a href="{{ route('activities.index') }}" class="btn btn-secondary">Annuleren</a>
         </div>
     </form>
 

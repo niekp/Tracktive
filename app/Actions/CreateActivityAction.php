@@ -15,7 +15,9 @@ final class CreateActivityAction
             'date' => Carbon::now()
         ]);
 
-        (new CreateGpxAction)($activity, $data->file);
+        $gpx = (new CreateGpxAction)($activity, $data->file);
+
+        // TODO: Update date with GPX.
 
         return $activity;
     }

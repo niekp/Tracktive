@@ -14,7 +14,13 @@ final class ActivityController extends Controller
 {
     public function index(Request $request)
     {
-        return 'ok';
+        $activities = Activity::query()
+            ->orderByDesc('date')
+            ->get();
+
+        return view('index', [
+            'activities' => $activities,
+        ]);
     }
 
     public function create()
@@ -24,7 +30,7 @@ final class ActivityController extends Controller
 
     public function show(Activity $activity)
     {
-        return $activity->id;
+        return view('show');
     }
 
     public function store(Request $request)
@@ -36,7 +42,6 @@ final class ActivityController extends Controller
         $activity = (new CreateActivityAction)(new ActivityData([
             'file' => $gpx,
         ]));
-
 
         return Redirect::route('activities.show', $activity->id);
     }
