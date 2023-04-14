@@ -12,9 +12,13 @@
     </script>
 @endsection
 @section('content')
-    @include('_partials.map', [ 'activity' => $activity ])
+    <h1>{{ $activity->data->start->format('d-m-Y H:i') }} - {{ $activity->data->stop->format('H:i') }}</h1>
 
-    <form method="post" action="{{ route('activities.update', $activity->id) }}" class="mt-3">
+    <div class="mt-3 mb-3">
+        @include('_partials.map', [ 'activity' => $activity ])
+    </div>
+
+    <form method="post" action="{{ route('activities.update', $activity->id) }}">
         @method('PATCH')
         @csrf
 
@@ -48,7 +52,7 @@
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary mt-5">Opslaan</button>
+        <button type="submit" class="btn btn-primary">Opslaan</button>
     </form>
 
     <form method="POST"

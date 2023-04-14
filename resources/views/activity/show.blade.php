@@ -44,6 +44,8 @@
         </div>
     @endif
 
-    <a href="{{ route('activities.edit', $activity->id) }}" class="btn btn-primary mt-5">Bewerken</a>
-    <a href="{{ route('activities.index') }}" class="btn btn-secondary ms-2 mt-5">Terug</a>
+    <div class="pb-5 pt-2">
+        <a href="{{ route('activities.edit', $activity->id) }}" class="btn btn-primary">Bewerken</a>
+        <a href="{{ route('activities.index') }}" class="btn btn-secondary ms-2">Terug</a>
+    </div>
 @endsection
