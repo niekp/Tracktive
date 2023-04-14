@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title','Sport')
+@section('title', 'Activiteiten')
 @section('content')
     <h1>Activiteiten</h1>
     <div class="mb-3">

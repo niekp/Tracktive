@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title','Nieuw')
+@section('title', $activity->type . ' ' . $stats->start->format('d-m-Y H:i'))
 @section('scripts')
     @include('_partials.map-scripts')
 @endsection

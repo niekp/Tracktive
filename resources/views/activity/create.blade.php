@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title','Nieuw')
+@section('title', 'Nieuwe activiteit')
 @section('content')
 
     <form method="post" action="{{ route('activities.store') }}" enctype='multipart/form-data'>
