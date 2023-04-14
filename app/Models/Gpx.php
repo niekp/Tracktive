@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\DataTransferModels\ActivityResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
+use phpGPX\phpGPX;
 
 /**
  * @property string $file

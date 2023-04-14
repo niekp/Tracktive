@@ -4,11 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Actions\CreateActivityAction;
 use App\DataTransferModels\ActivityData;
+use App\DataTransferModels\ActivityResource;
 use App\Models\Activity;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Storage;
 
 final class ActivityController extends Controller
 {
@@ -30,7 +29,10 @@ final class ActivityController extends Controller
 
     public function show(Activity $activity)
     {
-        return view('show');
+        return view('show', [
+            'activity' => $activity,
+            'stats' => $activity->getData(),
+        ]);
     }
 
     public function store(Request $request)

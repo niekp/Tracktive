@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\DataTransferModels\ActivityResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,7 +11,8 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property string $type
- * @property Carbon date
+ * @property Carbon $date
+ * @property Gpx $gpx
  */
 class Activity extends Model
 {
@@ -18,11 +20,13 @@ class Activity extends Model
 
     protected $fillable = [
         'type',
-        'date'
+        'date',
+        'data',
     ];
 
     protected $casts = [
         'date' => 'datetime',
+        'data' => ActivityResource::class,
     ];
 
     public function gpxes(): HasMany
@@ -33,5 +37,18 @@ class Activity extends Model
     public function gpx(): HasOne
     {
         return $this->hasOne(Gpx::class)->orderByDesc('version');
+    }
+
+    public function getData(): ?ActivityResource
+    {
+        if (!$this->data
+            && $this->gpx
+            && ($data = ActivityResource::fromGpx($this->gpx))
+        ) {
+            $this->data = $data;
+            $this->save();
+        }
+
+        return $this->data ?? null;
     }
 }
