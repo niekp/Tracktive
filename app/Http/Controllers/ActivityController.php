@@ -7,6 +7,7 @@ use App\DataTransferModels\ActivityData;
 use App\DataTransferModels\ActivityResource;
 use App\Models\Activity;
 use App\Models\Gpx;
+use App\Models\Person;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Redirect;
@@ -17,24 +18,37 @@ final class ActivityController extends Controller
     public function index(Request $request)
     {
         $activities = Activity::query()
+            ->with('persons')
             ->orderByDesc('date')
             ->get();
 
-        return view('index', [
+        return view('activity.index', [
             'activities' => $activities,
         ]);
     }
 
     public function create()
     {
-        return view('create');
+        return view('activity.create');
     }
 
     public function show(Activity $activity)
     {
-        return view('show', [
+        return view('activity.show', [
             'activity' => $activity,
             'stats' => $activity->getData(),
+        ]);
+    }
+
+    public function edit(Activity $activity)
+    {
+        $types = Activity::query()->whereNotNull('type')->select('type')->distinct()->pluck('type');
+        $persons = Person::query()->orderBy('name')->get();
+
+        return view('activity.edit', [
+            'activity' => $activity,
+            'types' => $types,
+            'persons' => $persons,
         ]);
     }
 
@@ -47,6 +61,20 @@ final class ActivityController extends Controller
         $activity = (new CreateActivityAction)(new ActivityData([
             'file' => $gpx,
         ]));
+
+        return Redirect::route('activities.edit', $activity->id);
+    }
+
+    public function update(Activity $activity, Request $request)
+    {
+        $activity->type = $request->post('type');
+        $persons = $request->post('person') ? Person::query()->whereIn('id', $request->post('person'))->get() : null;
+        if ($persons) {
+            $activity->persons()->sync($persons);
+        } else {
+            $activity->persons()->detach();
+        }
+        $activity->save();
 
         return Redirect::route('activities.show', $activity->id);
     }

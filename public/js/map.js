@@ -28,6 +28,9 @@ if (config.dataset.captureId) {
                         headers: {
                             "Content-type": "application/json; charset=UTF-8"
                         }
+                    }).then(function () {
+                        document.getElementById('mapContainer').style.width = '100%';
+                        map.getViewPort().resize();
                     });
                 });
                 captured = true;

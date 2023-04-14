@@ -4,7 +4,10 @@
     @include('_partials.map-scripts')
 @endsection
 @section('content')
-    @include('_partials.map', [ 'capture_id' => $activity->id])
+    <h1>{{ $activity->type }} op {{ $stats->start->format('d-m-Y H:i') }} - {{ $stats->stop->format('H:i') }}</h1>
+    <div class="mb-2"><small class="text-muted">{{ $activity->persons->map(fn ($person) => $person->name)->join(', ') }}</small></div>
+
+    @include('_partials.map', [ 'activity' => $activity ])
 
     <div class="form-group row">
         <label for="distance" class="col-sm-2 col-form-label">Afstand</label>
@@ -40,22 +43,7 @@
             </div>
         </div>
     @endif
-    <div data-container="coordinates" style="display: none;">
-        <activity>
-            @foreach ($stats->coordinates as $coordinate)
-                <coord data-lat="{{ $coordinate->latitude }}" data-long="{{ $coordinate->longitude }}" data-time="{{ $coordinate->time }}"></coord>
-            @endforeach
-        </activity>
-    </div>
 
-    <form method="POST"
-          action="{{ route('activities.destroy', $activity->id) }}"
-          style="float: left;"
-          onsubmit="return confirm('Zekerweten?')"
-    >
-        @method ('DELETE')
-        @csrf
-        <button type="submit" class="btn btn-danger mt-5">Verwijderen</button>
-    </form>
+    <a href="{{ route('activities.edit', $activity->id) }}" class="btn btn-primary mt-5">Bewerken</a>
     <a href="{{ route('activities.index') }}" class="btn btn-secondary ms-2 mt-5">Terug</a>
 @endsection

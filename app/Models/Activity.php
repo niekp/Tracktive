@@ -5,6 +5,7 @@ namespace App\Models;
 use App\DataTransferModels\ActivityResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
@@ -40,6 +41,11 @@ class Activity extends Model
     public function gpx(): HasOne
     {
         return $this->hasOne(Gpx::class)->orderByDesc('version');
+    }
+
+    public function persons(): BelongsToMany
+    {
+        return $this->belongsToMany(Person::class, 'activity_people');
     }
 
     public function getData(): ?ActivityResource
