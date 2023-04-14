@@ -12,15 +12,38 @@ var map = new H.Map(
     document.getElementById('mapContainer'),
     defaultLayers.vector.normal.map,
 );
+
+var captured = false;
+if (config.dataset.captureId) {
+    map.getEngine().addEventListener('render', (evt) => {
+        if (map.getEngine() === evt.target) {
+            if (!captured) {
+                map.capture(function(capturedCanvas) {
+                    fetch("/api/capture", {
+                        method: "POST",
+                        body: JSON.stringify({
+                            capture_id: config.dataset.captureId,
+                            data: capturedCanvas.toDataURL("image/png"),
+                        }),
+                        headers: {
+                            "Content-type": "application/json; charset=UTF-8"
+                        }
+                    });
+                });
+                captured = true;
+            }
+        }
+    });
+}
+
 var activities = document.querySelectorAll("[data-container='coordinates'] activity");
 var markers = document.querySelectorAll("[data-container='coordinates'] markers coord");
-var till = null;
 
 function drawMap() {
     var group = new H.map.Group();
     map.removeObjects(map.getObjects())
 
-    // Rides
+    // Activities
 
     activities.forEach(activity => {
         var startPoint = null;
@@ -29,12 +52,6 @@ function drawMap() {
         activity.querySelectorAll("coord").forEach(coord => {
             var latitude = parseFloat(coord.dataset.lat);
             var longitude = parseFloat(coord.dataset.long);
-            if (till) {
-                var time = new Date(coord.dataset.time).getTime();
-                if (time > till) {
-                    return;
-                }
-            }
 
             coords = { lat: latitude, lng: longitude };
 
@@ -87,8 +104,13 @@ function drawMap() {
 
     map.addObject(group);
 
+    var bounds = group.getBoundingBox();
+    bounds.a -= 0.002;
+    bounds.f -= 0.002;
+    bounds.b += 0.002;
+    bounds.c += 0.002;
     map.getViewModel().setLookAtData({
-        bounds: group.getBoundingBox()
+        bounds: bounds
     });
 }
 

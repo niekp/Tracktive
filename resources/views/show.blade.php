@@ -4,7 +4,7 @@
     @include('_partials.map-scripts')
 @endsection
 @section('content')
-    @include('_partials.map')
+    @include('_partials.map', [ 'capture_id' => $activity->id])
 
     <div class="form-group row">
         <label for="distance" class="col-sm-2 col-form-label">Afstand</label>
@@ -48,5 +48,14 @@
         </activity>
     </div>
 
-    <a href="{{ route('activities.index') }}" class="btn btn-secondary mt-5">Terug</a>
+    <form method="POST"
+          action="{{ route('activities.destroy', $activity->id) }}"
+          style="float: left;"
+          onsubmit="return confirm('Zekerweten?')"
+    >
+        @method ('DELETE')
+        @csrf
+        <button type="submit" class="btn btn-danger mt-5">Verwijderen</button>
+    </form>
+    <a href="{{ route('activities.index') }}" class="btn btn-secondary ms-2 mt-5">Terug</a>
 @endsection

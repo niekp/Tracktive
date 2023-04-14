@@ -6,8 +6,11 @@ use App\Actions\CreateActivityAction;
 use App\DataTransferModels\ActivityData;
 use App\DataTransferModels\ActivityResource;
 use App\Models\Activity;
+use App\Models\Gpx;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 
 final class ActivityController extends Controller
 {
@@ -46,5 +49,34 @@ final class ActivityController extends Controller
         ]));
 
         return Redirect::route('activities.show', $activity->id);
+    }
+
+    public function destroy(Activity $activity)
+    {
+        /** @var Gpx $gpx */
+        foreach ($activity->gpxes() as $gpx) {
+            Storage::delete($gpx->file);
+        }
+
+        $activity->delete();
+
+        return Redirect::route('activities.index');
+    }
+
+    public function capture(Request $request)
+    {
+        /** @var Activity $activity */
+        $activity = Activity::findOrFail($request->get('capture_id'));
+        if (!$request->get('data')) {
+            return response()->json(['error' => 'no data', Response::HTTP_BAD_REQUEST]);
+        }
+
+        if ($activity->image) {
+            return response()->json(['success' => 'activity has image already', 200]);
+        }
+
+        $activity->image = $request->get('data');
+        $activity->save();
+        return response()->json(['success' => 'success', 200]);
     }
 }

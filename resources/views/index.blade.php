@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title','Nieuw')
+@section('title','Sport')
 @section('content')
     <div class="mb-3">
         <a href="{{ route('activities.create') }}" class="btn btn-primary">Nieuwe activiteit</a>
@@ -13,7 +13,7 @@
             @endphp
             <div class="col">
                 <div class="card">
-                    <img class="card-img-top" src="..." alt="Route">
+                    <img class="card-img-top" src="{{ $activity->image }}" alt="Route">
                     <div class="card-body">
                         <p class="card-text">
                             <ul>

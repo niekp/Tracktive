@@ -12,6 +12,8 @@ use Illuminate\Support\Carbon;
 /**
  * @property string $type
  * @property Carbon $date
+ * @property ActivityResource $data
+ * @property string $image
  * @property Gpx $gpx
  */
 class Activity extends Model
@@ -22,6 +24,7 @@ class Activity extends Model
         'type',
         'date',
         'data',
+        'image',
     ];
 
     protected $casts = [
