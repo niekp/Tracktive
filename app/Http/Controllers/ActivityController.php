@@ -74,6 +74,8 @@ final class ActivityController extends Controller
         } else {
             $activity->persons()->detach();
         }
+        $activity->data = null;
+        $activity->image = null;
         $activity->save();
 
         return Redirect::route('activities.show', $activity->id);
