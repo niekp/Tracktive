@@ -1,8 +1,56 @@
 @extends('layouts.master')
 @section('title', 'Activiteiten')
 @section('content')
-    <div class="row row-cols-1 row-cols-md-2 g-4">
+    @if (!$selected_persons && !$selected_type)
+        <a class="btn btn-primary mb-2" data-bs-toggle="collapse" href="#filter" role="button" aria-expanded="false" aria-controls="filter" onclick="this.style.display = 'none';">Filteren</a>
+        <div class="row collapse multi-collapse" id="filter">
+    @else
+        <div class="row">
+    @endif
+        <form method="get">
+            <form class="form-inline">
+                <div class="form-group mb-2">
+                    <label class="col-sm-1">Wie</label>
+                    @foreach ($persons as $person)
+                        <span class="ms-2">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   name="person[]"
+                                   value="{{ $person->id }}"
+                                   id="person_{{ $person->id }}"
+                                  {{ in_array($person->id, $selected_persons ?? []) ? "checked='checked'" : '' }}
+                            />
+                            <label class="form-check-label" for="person_{{ $person->id }}">{{ $person->name }}</label>
+                        </span>
+                    @endforeach
+                </div>
 
+                <div class="row g-3 align-items-center">
+                    <label class="col-sm-1">Activiteit</label>
+                    <div class="col-auto ms-2">
+                        <select name="type" class="form-control">
+                            <option value="">-</option>
+                            @foreach ($types as $type)
+                                <option value="{{ $type }}"
+                                {{ $selected_type === $type ? "selected='selected'" : '' }}
+                                >{{ $type }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="row g-3 align-items-center">
+                    <label class="col-sm-1"></label>
+                    <div class="col-auto ms-2">
+                        <button type="submit" class="btn btn-primary my-2">Filter</button>
+                        <a href="{{ route('activities.index') }}" class="btn btn-secondary">Annuleren</a>
+                    </div>
+                </div>
+            </form>
+        </form>
+    </div>
+    <div class="row row-cols-1 row-cols-md-2 g-4">
         @foreach ($activities as $activity)
             @php
                 $data = $activity->getData();

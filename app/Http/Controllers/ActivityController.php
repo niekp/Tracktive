@@ -17,13 +17,26 @@ final class ActivityController extends Controller
 {
     public function index(Request $request)
     {
+        $types = Activity::query()->whereNotNull('type')->select('type')->distinct()->pluck('type');
+        $persons = Person::query()->orderBy('name')->get();
+
         $activities = Activity::query()
             ->with('persons')
-            ->orderByDesc('date')
-            ->get();
+            ->orderByDesc('date');
+
+        if ($request->get('person')) {
+            $activities->whereHas('persons', fn($q) => $q->whereIn('person_id', $request->get('person')));
+        }
+        if ($request->get('type')) {
+            $activities->where('type', $request->get('type'));
+        }
 
         return view('activity.index', [
-            'activities' => $activities,
+            'activities' => $activities->get(),
+            'types' => $types,
+            'persons' => $persons,
+            'selected_persons' => $request->get('person'),
+            'selected_type' => $request->get('type'),
         ]);
     }
 
