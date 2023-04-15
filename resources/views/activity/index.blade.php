@@ -50,7 +50,7 @@
             </form>
         </form>
     </div>
-    <div class="row row-cols-1 row-cols-md-2 g-4">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
         @foreach ($activities as $activity)
             @php
                 $data = $activity->getData();
