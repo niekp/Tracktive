@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Console\Commands\CreatePersonCommand;
+use App\Console\Commands\NtfyCommand;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -14,6 +15,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->commands([
             CreatePersonCommand::class,
+            NtfyCommand::class,
         ]);
     }
 
