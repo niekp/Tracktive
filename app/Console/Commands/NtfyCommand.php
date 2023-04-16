@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Jobs\ProcessNtfy;
 use Illuminate\Console\Command;
 use Illuminate\Log\Logger;
-use Illuminate\Support\Facades\Config;
 
 class NtfyCommand extends Command
 {

@@ -12,8 +12,9 @@
         "laravel/tinker": "^2.8",
         "sibyx/phpgpx": "1.2.1",
         "spatie/data-transfer-object": "^3.9",
-        "spatie/laravel-data": "^3.4"
-    },
+        "spatie/laravel-data": "^3.4",
+		"ext-curl": "*"
+	},
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.0",
