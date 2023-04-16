@@ -33,7 +33,7 @@ class ProcessNtfy implements ShouldQueue
             ],
         ]) : null;
 
-        $fp = fopen(Config::get('ntfy.token') . '/json', 'rb', false, $context);
+        $fp = fopen(Config::get('ntfy.url') . '/json', 'rb', false, $context);
         if (!$fp) {
             die('cannot open stream');
         }
@@ -41,7 +41,7 @@ class ProcessNtfy implements ShouldQueue
         while (!feof($fp)) {
             $logger->info(fgets($fp, 2048));
         }
-        
+
         fclose($fp);
     }
 }
