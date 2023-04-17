@@ -34,6 +34,8 @@ final class ActivityResource extends Data
 
     public static function fromGpx(Gpx $gpx): self
     {
+        phpGPX::$APPLY_ELEVATION_SMOOTHING = true;
+        phpGPX::$APPLY_DISTANCE_SMOOTHING = true;
         $file = phpGPX::load(Storage::path($gpx->file));
         return self::getStats($file);
     }
