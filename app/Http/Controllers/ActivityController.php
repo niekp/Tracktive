@@ -71,9 +71,7 @@ final class ActivityController extends Controller
             return Redirect::route('create');
         }
 
-        $activity = (new CreateActivityAction)(new ActivityData([
-            'file' => $gpx,
-        ]));
+        $activity = (new CreateActivityAction)(new ActivityData($gpx));
 
         return Redirect::route('activities.edit', $activity->id);
     }
