@@ -2,10 +2,11 @@
 
 namespace App\DataTransferModels;
 
-use Spatie\DataTransferObject\DataTransferObject;
+use Spatie\LaravelData\Data;
 
-final class ActivityData extends DataTransferObject
+final class ActivityData extends Data
 {
-    public \SplFileInfo $file;
-
+    public function __construct(
+        public \SplFileInfo $file,
+    ) {}
 }

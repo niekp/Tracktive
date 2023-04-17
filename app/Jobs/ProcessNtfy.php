@@ -2,6 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Actions\ProcessNtfyAction;
+use App\Actions\SendNtfyAction;
+use App\DataTransferModels\NtfyData;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,19 +14,23 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Config;
 
-class ProcessNtfy implements ShouldQueue, ShouldBeUnique
+class ProcessNtfy implements ShouldQueue //, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private Logger $logger;
 
+    private ProcessNtfyAction $process_action;
+
     /**
      * Execute the job.
      */
-    public function handle(Logger $logger): void
+    public function handle(Logger $logger, SendNtfyAction $send_ntfy, ProcessNtfyAction $process_action): void
     {
         $this->logger = $logger;
-        $this->sendMessage('Start process');
+        $this->process_action = $process_action;
+
+        ($send_ntfy)('Start process');
 
         if (!Config::get('ntfy.url')) {
             return;
@@ -36,12 +43,24 @@ class ProcessNtfy implements ShouldQueue, ShouldBeUnique
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
         curl_setopt($ch, CURLOPT_WRITEFUNCTION, function ($ch, $str) {
-            if (str_contains($str, 'kill')) {
-                $this->logger->info('Killswitch triggered');
+            try {
+
+                if (curl_errno($ch)) {
+                    return 0;
+                }
+
+                if (str_contains($str, 'kill')) {
+                    return 0;
+                }
+
+                foreach (explode("\n", $str) as $message) {
+                    $this->processMessage($str);
+                }
+
+            } catch (\Exception $e) {
+                dump($e);
                 return 0;
             }
-
-            $this->processMessage($str);
 
             return strlen($str);
         });
@@ -51,6 +70,7 @@ class ProcessNtfy implements ShouldQueue, ShouldBeUnique
         ]);
 
         curl_exec($ch);
+
         if (curl_errno($ch)) {
             $this->logger->error('Error processing ntfy', [
                 'error' => curl_error($ch),
@@ -59,46 +79,18 @@ class ProcessNtfy implements ShouldQueue, ShouldBeUnique
 
         curl_close($ch);
 
-        $this->sendMessage('Ntfy process killed');
-    }
-
-    private function sendMessage($message): void
-    {
-        try {
-            $ch = curl_init();
-
-            curl_setopt($ch, CURLOPT_URL, Config::get('ntfy.url'));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $message);
-
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Content-Type: text/plain',
-                'Authorization: Bearer ' . Config::get('ntfy.token'),
-            ]);
-
-            curl_exec($ch);
-
-            curl_close($ch);
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), [
-                'e' => $e,
-            ]);
-        }
+        ($send_ntfy)('Ntfy process killed');
     }
 
     private function processMessage(string $message): void
     {
         try {
-            $data = json_decode($message);
-            if ($data->message) {
-                dump($data->message, $data);
-            }
-        } catch (\Exception) {
-            $this->logger->error($e->getMessage(), [
+            $data = NtfyData::from(json_decode($message));
+            ($this->process_action)($data);
+        } catch (\Exception $e) {
+            /*$this->logger->error($e->getMessage(), [
                 'e' => $e,
-            ]);
+            ]);*/
         }
     }
 }
