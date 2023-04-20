@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\DataTransferModels\ActivityResource;
+use App\DataTransferModels\ActivityData;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

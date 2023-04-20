@@ -3,8 +3,8 @@
 namespace App\Actions;
 
 
-use App\DataTransferModels\ActivityData;
 use App\DataTransferModels\NtfyData;
+use App\Events\GpxUploaded;
 use Illuminate\Support\Facades\Storage;
 
 final class ProcessNtfyAction
@@ -39,12 +39,8 @@ final class ProcessNtfyAction
         file_put_contents($path, fopen($message->attachment->url, 'rb'));
 
         // TODO: Hier gaat iets mis.
-        $data = new ActivityData(
-            new \SplFileInfo($path),
-        );
-        $activity = (new CreateActivityAction)($data);
+        GpxUploaded::dispatch(new \SplFileInfo($path));
 
-        ($this->send_action)('Activiteit gemaakt: ' . route('activities.edit', $activity->id));
-
+        ($this->send_action)('Activiteit gemaakt.');
     }
 }

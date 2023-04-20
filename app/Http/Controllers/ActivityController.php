@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\CreateActivityAction;
-use App\DataTransferModels\ActivityData;
-use App\DataTransferModels\ActivityResource;
+use App\Events\GpxUploaded;
 use App\Models\Activity;
 use App\Models\Gpx;
 use App\Models\Person;
@@ -21,6 +19,7 @@ final class ActivityController extends Controller
         $persons = Person::query()->orderBy('name')->get();
 
         $activities = Activity::query()
+            ->whereNotNull('data')
             ->with('persons')
             ->orderByDesc('date');
 
@@ -47,6 +46,10 @@ final class ActivityController extends Controller
 
     public function show(Activity $activity)
     {
+        if (!$activity->type) {
+            return Redirect::route('activities.edit', $activity->id);
+        }
+
         return view('activity.show', [
             'activity' => $activity,
             'stats' => $activity->getData(),
@@ -71,7 +74,8 @@ final class ActivityController extends Controller
             return Redirect::route('create');
         }
 
-        $activity = (new CreateActivityAction)(new ActivityData($gpx));
+        GpxUploaded::dispatch($gpx);
+        $activity = Activity::query()->orderByDesc('id')->first();
 
         return Redirect::route('activities.edit', $activity->id);
     }
@@ -85,7 +89,6 @@ final class ActivityController extends Controller
         } else {
             $activity->persons()->detach();
         }
-        $activity->data = null;
         $activity->image = null;
         $activity->save();
 

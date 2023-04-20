@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\DataTransferModels\ActivityResource;
+use App\DataTransferModels\ActivityData;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -13,7 +13,7 @@ use Illuminate\Support\Carbon;
 /**
  * @property string $type
  * @property Carbon $date
- * @property ActivityResource $data
+ * @property ActivityData $data
  * @property string $image
  * @property Gpx $gpx
  */
@@ -30,7 +30,7 @@ class Activity extends Model
 
     protected $casts = [
         'date' => 'datetime',
-        'data' => ActivityResource::class,
+        'data' => ActivityData::class,
     ];
 
     public function gpxes(): HasMany
@@ -48,16 +48,8 @@ class Activity extends Model
         return $this->belongsToMany(Person::class, 'activity_people');
     }
 
-    public function getData(): ?ActivityResource
+    public function getData(): ?ActivityData
     {
-        if (!$this->data
-            && $this->gpx
-            && ($data = ActivityResource::fromGpx($this->gpx))
-        ) {
-            $this->data = $data;
-            $this->save();
-        }
-
-        return $this->data ?? null;
+        return $this->data;
     }
 }
