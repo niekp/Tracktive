@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Console\Commands\CreatePersonCommand;
 use App\Console\Commands\NtfyCommand;
+use App\Console\Commands\ReprocessDataCommand;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -17,6 +18,7 @@ class AppServiceProvider extends ServiceProvider
         $this->commands([
             CreatePersonCommand::class,
             NtfyCommand::class,
+            ReprocessDataCommand::class,
         ]);
     }
 

@@ -5,7 +5,7 @@ namespace App\EventSubscibers;
 use App\Actions\CreateActivityAction;
 use App\Actions\CreateGpxAction;
 use App\Actions\ProcessActivityStatsAction;
-use App\Events\ActivityCreated;
+use App\Actions\TrimGpxAction;
 use App\Events\GpxUploaded;
 use Illuminate\Events\Dispatcher;
 
@@ -15,6 +15,7 @@ final class GpxProcessor
     {
         $activity = (new CreateActivityAction)();
         (new CreateGpxAction)($activity, $event->file);
+        (new TrimGpxAction)($activity);
         (new ProcessActivityStatsAction)($activity);
     }
 

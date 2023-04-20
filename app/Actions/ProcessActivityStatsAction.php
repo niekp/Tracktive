@@ -6,6 +6,7 @@ use App\DataTransferModels\ActivityData;
 use App\DataTransferModels\Coordinate;
 use App\Models\Activity;
 use App\Models\Gpx;
+use DateTime;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use phpGPX\phpGPX;
@@ -29,33 +30,32 @@ final class ProcessActivityStatsAction
         foreach ($gpx_file->tracks as $track) {
             foreach ($track->segments as $segment) {
                 foreach ($segment->getPoints() as $point) {
-                    $time = Carbon::createFromInterface($point->time);
                     if (!isset($data->start)) {
-                        $data->start = $time;
+                        $data->start = $point->time;
                     }
 
-                    $data->stop = $time;
-
-                    $coordinates[] = new Coordinate(
-                        $point->latitude,
-                        $point->longitude,
-                        $time,
-                    );
+                    $data->stop = $point->time;
 
                     $data->distance += $point->difference ?? 0.0;
 
                     $duration = 0;
-                    if ($previous_time instanceof Carbon) {
-                        $duration = $time->diffInSeconds($previous_time);
+                    if ($previous_time instanceof DateTime) {
+                        $duration = $point->time->getTimestamp() - $previous_time->getTimestamp();
                     }
 
                     if ($duration && $point->difference / $duration > 0.5) { // 1.8km/u
                         $data->seconds_active += $duration;
+
+                        $coordinates[] = new Coordinate(
+                            $point->latitude,
+                            $point->longitude,
+                            $point->time,
+                        );
                     } else {
                         $data->seconds_paused += $duration;
                     }
 
-                    $previous_time = $time;
+                    $previous_time = $point->time;
                 }
             }
         }

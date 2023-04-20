@@ -9,9 +9,9 @@ use Spatie\LaravelData\DataCollection;
 
 final class ActivityData extends Data
 {
-    public ?Carbon $start = null;
+    public ?\DateTime $start = null;
 
-    public ?Carbon $stop = null;
+    public ?\DateTime $stop = null;
 
     public float $distance = 0;
 

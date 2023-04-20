@@ -10,7 +10,7 @@
 <div data-container="coordinates" style="display: none;">
     <activity>
         @foreach ($activity->getData()->coordinates as $coordinate)
-            <coord data-lat="{{ $coordinate->latitude }}" data-long="{{ $coordinate->longitude }}" data-time="{{ $coordinate->time }}"></coord>
+            <coord data-lat="{{ $coordinate->latitude }}" data-long="{{ $coordinate->longitude }}" data-time="{{ $coordinate->time->format('c') }}"></coord>
         @endforeach
     </activity>
 </div>

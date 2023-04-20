@@ -14,7 +14,7 @@ final class CreateGpxAction
         $path = Storage::path('/gpx');
         $filename = sprintf("%d_%d.gpx", $activity->id, $version);
 
-        $gpx->move($path, $filename);
+        rename($gpx->getRealPath(), $path . '/' . $filename);
 
         return $activity->gpxes()->create([
             'file' => 'gpx/' . $filename,
