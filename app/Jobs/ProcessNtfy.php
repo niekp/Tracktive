@@ -14,7 +14,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Config;
 
-class ProcessNtfy implements ShouldQueue //, ShouldBeUnique
+class ProcessNtfy implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -53,12 +53,8 @@ class ProcessNtfy implements ShouldQueue //, ShouldBeUnique
                     return 0;
                 }
 
-                foreach (explode("\n", $str) as $message) {
-                    $this->processMessage($str);
-                }
-
+                $this->processMessage($str);
             } catch (\Exception $e) {
-                dump($e);
                 return 0;
             }
 
@@ -88,9 +84,6 @@ class ProcessNtfy implements ShouldQueue //, ShouldBeUnique
             $data = NtfyData::from(json_decode($message));
             ($this->process_action)($data);
         } catch (\Exception $e) {
-            /*$this->logger->error($e->getMessage(), [
-                'e' => $e,
-            ]);*/
         }
     }
 }

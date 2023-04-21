@@ -14,7 +14,7 @@ final class GpxProcessor
     public function handleGpxUploaded(GpxUploaded $event)
     {
         $activity = (new CreateActivityAction)();
-        (new CreateGpxAction)($activity, $event->file);
+        (new CreateGpxAction)($activity, $event->path);
         (new TrimGpxAction)($activity);
         (new ProcessActivityStatsAction)($activity);
     }

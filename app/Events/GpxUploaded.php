@@ -9,7 +9,7 @@ final class GpxUploaded
     use Dispatchable;
 
     public function __construct(
-        public \SplFileInfo $file
+        public $path
     )
     {
     }

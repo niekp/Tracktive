@@ -8,7 +8,7 @@ final class SendNtfyAction
 {
     public const TAG = 'man_playing_handball';
 
-    public function __invoke(string $message)
+    public function __invoke(string $message, ?string $url = null, array $actions = [])
     {
         $ch = curl_init();
 
@@ -18,11 +18,21 @@ final class SendNtfyAction
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($ch, CURLOPT_POSTFIELDS, $message);
 
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        $headers = [
             'Content-Type: text/plain',
             'Authorization: Bearer ' . Config::get('ntfy.token'),
             'Tags: ' . self::TAG,
-        ]);
+        ];
+
+        if ($url) {
+            $headers[] = 'Click: ' . $url;
+        }
+
+        if ($actions) {
+            $headers[] = 'Actions: ' . implode(';', $actions);
+        }
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         curl_exec($ch);
 

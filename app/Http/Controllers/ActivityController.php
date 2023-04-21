@@ -74,7 +74,7 @@ final class ActivityController extends Controller
             return Redirect::route('create');
         }
 
-        GpxUploaded::dispatch($gpx);
+        GpxUploaded::dispatch($gpx->getRealPath());
         $activity = Activity::query()->orderByDesc('id')->first();
 
         return Redirect::route('activities.edit', $activity->id);

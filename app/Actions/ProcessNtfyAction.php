@@ -5,6 +5,7 @@ namespace App\Actions;
 
 use App\DataTransferModels\NtfyData;
 use App\Events\GpxUploaded;
+use App\Models\Activity;
 use Illuminate\Support\Facades\Storage;
 
 final class ProcessNtfyAction
@@ -38,9 +39,10 @@ final class ProcessNtfyAction
         $path = Storage::path('download/') . $message->attachment->name;
         file_put_contents($path, fopen($message->attachment->url, 'rb'));
 
-        // TODO: Hier gaat iets mis.
-        GpxUploaded::dispatch(new \SplFileInfo($path));
-
-        ($this->send_action)('Activiteit gemaakt.');
+        GpxUploaded::dispatch($path);
+        $activity = Activity::query()->orderByDesc('id')->first();
+        ($this->send_action)('Activiteit gemaakt.', actions: [
+            'view, Bekijken, ' . route('activities.edit', $activity->id)
+        ]);
     }
 }

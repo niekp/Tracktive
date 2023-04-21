@@ -8,13 +8,13 @@ use Illuminate\Support\Facades\Storage;
 
 final class CreateGpxAction
 {
-    public function __invoke(Activity $activity, \SplFileInfo $gpx): Gpx
+    public function __invoke(Activity $activity, $path): Gpx
     {
         $version = $activity->gpxes()->count() + 1;
-        $path = Storage::path('/gpx');
+        $destination = Storage::path('/gpx');
         $filename = sprintf("%d_%d.gpx", $activity->id, $version);
 
-        rename($gpx->getRealPath(), $path . '/' . $filename);
+        rename($path, $destination . '/' . $filename);
 
         return $activity->gpxes()->create([
             'file' => 'gpx/' . $filename,
