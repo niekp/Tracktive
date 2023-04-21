@@ -3,10 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Actions\ProcessActivityStatsAction;
-use App\Jobs\ProcessNtfy;
 use App\Models\Activity;
 use Illuminate\Console\Command;
-use Illuminate\Log\Logger;
 
 class ReprocessDataCommand extends Command
 {

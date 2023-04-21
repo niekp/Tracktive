@@ -43,7 +43,7 @@ final class TrimGpxAction
 
             $previous_time = $point->time;
 
-            if ($duration && $point->difference / $duration > 0.5) {
+            if (($duration && $point->difference / $duration > 0.5) || $filtered_points) {
                 $filtered_points[] = $point;
             }
         }
