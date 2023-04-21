@@ -56,7 +56,7 @@
                 $data = $activity->getData();
             @endphp
             <div class="col">
-                <div class="card">
+                <div class="card mb-3">
                     <img class="card-img-top" src="{{ $activity->image }}" alt="Route">
                     <div class="card-body">
                         <h5 class="card-title">{{ $activity->type }}</h5>

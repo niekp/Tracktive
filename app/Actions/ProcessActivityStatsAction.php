@@ -7,7 +7,6 @@ use App\DataTransferModels\Coordinate;
 use App\Models\Activity;
 use App\Models\Gpx;
 use DateTime;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use phpGPX\phpGPX;
 use Spatie\LaravelData\DataCollection;
