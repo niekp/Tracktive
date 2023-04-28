@@ -14,4 +14,3 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('capture', [\App\Http\Controllers\ActivityController::class, 'capture']);

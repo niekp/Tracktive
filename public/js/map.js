@@ -19,14 +19,15 @@ if (config.dataset.captureId) {
         if (map.getEngine() === evt.target) {
             if (!captured) {
                 map.capture(function(capturedCanvas) {
-                    fetch("/api/capture", {
+                    fetch("/capture", {
                         method: "POST",
                         body: JSON.stringify({
                             capture_id: config.dataset.captureId,
                             data: capturedCanvas.toDataURL("image/png"),
                         }),
                         headers: {
-                            "Content-type": "application/json; charset=UTF-8"
+                            "Content-type": "application/json; charset=UTF-8",
+                            'X-CSRF-Token': document.querySelector('meta[name="_token"]').content,
                         }
                     }).then(function () {
                         document.getElementById('mapContainer').style.width = '100%';

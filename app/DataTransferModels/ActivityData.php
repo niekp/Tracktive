@@ -25,4 +25,7 @@ final class ActivityData extends Data
 
     #[DataCollectionOf(Coordinate::class)]
     public ?DataCollection $coordinates = null;
+
+    #[DataCollectionOf(Speed::class)]
+    public ?DataCollection $speeds = null;
 }

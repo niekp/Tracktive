@@ -26,3 +26,5 @@ Route::get('/login/set-token', [\App\Http\Controllers\LoginController::class, 'l
 Route::middleware('auth:web')->group(function () {
     Route::resource('activities', \App\Http\Controllers\ActivityController::class);
 });
+
+Route::post('capture', [\App\Http\Controllers\ActivityController::class, 'capture']);

@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\DataTransferModels\ActivityData;
 use App\DataTransferModels\Coordinate;
+use App\DataTransferModels\Speed;
 use App\Models\Activity;
 use App\Models\Gpx;
 use DateTime;
@@ -25,6 +26,7 @@ final class ProcessActivityStatsAction
         $data = new ActivityData();
         $previous_time = null;
         $coordinates = [];
+        $speed = [];
 
         foreach ($gpx_file->tracks as $track) {
             foreach ($track->segments as $segment) {
@@ -50,6 +52,10 @@ final class ProcessActivityStatsAction
                             $point->longitude,
                             $point->time,
                         );
+                        $speed[] = new Speed(
+                            $point->difference / $duration * 3.6,
+                            $point->time,
+                        );
                     } else {
                         $data->seconds_paused += $duration;
                     }
@@ -60,6 +66,7 @@ final class ProcessActivityStatsAction
         }
 
         $data->coordinates = new DataCollection(Coordinate::class, $coordinates);
+        $data->speeds = new DataCollection(Speed::class, $speed);
         $data->average_speed_active = round($data->distance / $data->seconds_active * 3.6, 2);
         $data->average_speed_total = round($data->distance / ($data->seconds_active + $data->seconds_paused) * 3.6, 2);
         $data->distance = round($data->distance / 1000, 2);
