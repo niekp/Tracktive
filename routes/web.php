@@ -17,4 +17,12 @@ Route::get('/', function () {
     return \Illuminate\Support\Facades\Redirect::route('activities.index');
 });
 
-Route::resource('activities', \App\Http\Controllers\ActivityController::class);
+Route::match(['GET', 'POST'], '/login', \App\Http\Controllers\LoginController::class)->name('login');
+
+Route::get('/login/set-token', [\App\Http\Controllers\LoginController::class, 'login'])
+    ->middleware('signed')
+    ->name('login.set-token');
+
+Route::middleware('auth:web')->group(function () {
+    Route::resource('activities', \App\Http\Controllers\ActivityController::class);
+});
