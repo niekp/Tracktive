@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\MergeGpxFilesAction;
 use App\Events\GpxUploaded;
 use App\Models\Activity;
 use App\Models\Gpx;
@@ -72,6 +73,16 @@ final class ActivityController extends Controller
     {
         if (!$gpx = $request->file('gpx')) {
             return Redirect::route('create');
+        }
+
+        if (is_array($gpx) && count($gpx) > 1) {
+            $files = array_map(function (\SplFileInfo $file) {
+                return $file->getRealPath();
+            }, $gpx);
+
+            $gpx = (new MergeGpxFilesAction)($files);
+        } elseif (is_array($gpx) && count($gpx)) {
+            $gpx = $gpx[0];
         }
 
         GpxUploaded::dispatch($gpx->getRealPath());

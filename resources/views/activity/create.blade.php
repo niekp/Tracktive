@@ -7,7 +7,7 @@
 
         <div class="mb-3">
             <label for="formFile" class="form-label">GPX</label>
-            <input class="form-control" type="file" name="gpx" />
+            <input class="form-control" type="file" name="gpx[]" multiple />
         </div>
 
         <div class="col-12">
