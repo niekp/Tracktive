@@ -106,6 +106,20 @@ final class ActivityController extends Controller
         return Redirect::route('activities.show', $activity->id);
     }
 
+    public function download(Activity $activity, ?int $version = null)
+    {
+        $gpx = $activity->gpxes()->orderBy('version')
+            ->when($version, function ($query) use ($version) {
+                return $query->where('version', $version);
+            })
+            ->first();
+        if (!$gpx instanceof Gpx) {
+            return Redirect::route('activities.show', $activity->id);
+        }
+
+        return response()->download(Storage::path($gpx->file));
+    }
+
     public function destroy(Activity $activity)
     {
         /** @var Gpx $gpx */

@@ -23,21 +23,23 @@
             </div>
         </div>
     @endif
-    <div class="form-group row">
-        <label for="speed" class="col-sm-2 col-form-label">Gemiddelde snelheid</label>
-        <div class="col-sm-10">
-            <input type="text" readonly class="form-control-plaintext" id="speed" value="{{ $stats->average_speed_total }} km/u">
+    @if ($stats->seconds_paused < 30 * 60)
+        <div class="form-group row">
+            <label for="speed" class="col-sm-2 col-form-label">Gemiddelde snelheid</label>
+            <div class="col-sm-10">
+                <input type="text" readonly class="form-control-plaintext" id="speed" value="{{ $stats->average_speed_total }} km/u">
+            </div>
         </div>
-    </div>
-    <div class="form-group row">
-        <label for="duration" class="col-sm-2 col-form-label">Tijdsduur</label>
-        <div class="col-sm-10">
-            <input type="text" readonly class="form-control-plaintext" id="duration" value="{{ gmdate('H:i:s', $stats->seconds_active + $stats->seconds_paused) }}">
+        <div class="form-group row">
+            <label for="duration" class="col-sm-2 col-form-label">Tijdsduur</label>
+            <div class="col-sm-10">
+                <input type="text" readonly class="form-control-plaintext" id="duration" value="{{ gmdate('H:i:s', $stats->seconds_active + $stats->seconds_paused) }}">
+            </div>
         </div>
-    </div>
+    @endif
     @if ($stats->seconds_paused)
         <div class="form-group row">
-            <label for="duration" class="col-sm-2 col-form-label">Waarvan actief</label>
+            <label for="duration" class="col-sm-2 col-form-label">Actieve tijd</label>
             <div class="col-sm-10">
                 <input type="text" readonly class="form-control-plaintext" id="duration" value="{{ gmdate('H:i:s', $stats->seconds_active) }}">
             </div>
@@ -46,6 +48,7 @@
 
     <div class="pb-5 pt-2">
         <a href="{{ route('activities.edit', $activity->id) }}" class="btn btn-primary">Bewerken</a>
+        <a href="{{ route('activities.download', $activity->id) }}" class="btn btn-secondary ms-2">Download</a>
         <a href="{{ route('activities.index') }}" class="btn btn-secondary ms-2">Terug</a>
     </div>
 @endsection
