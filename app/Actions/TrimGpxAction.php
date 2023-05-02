@@ -3,7 +3,7 @@
 namespace App\Actions;
 
 use App\DataTransferModels\ActivityData;
-use App\DataTransferModels\Coordinate;
+use App\DataTransferModels\Point;
 use App\Models\Activity;
 use App\Models\Gpx;
 use Illuminate\Support\Carbon;

@@ -3,7 +3,7 @@
 namespace App\Actions;
 
 use App\DataTransferModels\ActivityData;
-use App\DataTransferModels\Coordinate;
+use App\DataTransferModels\Point;
 use App\DataTransferModels\Speed;
 use App\Models\Activity;
 use App\Models\Gpx;
@@ -25,8 +25,7 @@ final class ProcessActivityStatsAction
 
         $data = new ActivityData();
         $previous_time = null;
-        $coordinates = [];
-        $speed = [];
+        $points = [];
 
         foreach ($gpx_file->tracks as $track) {
             foreach ($track->segments as $segment) {
@@ -44,29 +43,28 @@ final class ProcessActivityStatsAction
                         $duration = $point->time->getTimestamp() - $previous_time->getTimestamp();
                     }
 
-                    if ($duration && $point->difference / $duration > 0.5) { // 1.8km/u
-                        $data->seconds_active += $duration;
+                    $active = $duration && $point->difference / $duration > 0.5; // 1.8km/u
 
-                        $coordinates[] = new Coordinate(
-                            $point->latitude,
-                            $point->longitude,
-                            $point->time,
-                        );
-                        $speed[] = new Speed(
-                            $point->difference / $duration * 3.6,
-                            $point->time,
-                        );
+                    if ($active) {
+                        $data->seconds_active += $duration;
                     } else {
                         $data->seconds_paused += $duration;
                     }
+
+                    $points[] = new Point(
+                        $point->latitude,
+                        $point->longitude,
+                        $point->time,
+                        $active,
+                        $duration ? $point->difference / $duration * 3.6 : 0,
+                    );
 
                     $previous_time = $point->time;
                 }
             }
         }
 
-        $data->coordinates = new DataCollection(Coordinate::class, $coordinates);
-        $data->speeds = new DataCollection(Speed::class, $speed);
+        $data->points = new DataCollection(Point::class, $points);
         $data->average_speed_active = round($data->distance / $data->seconds_active * 3.6, 2);
         $data->average_speed_total = round($data->distance / ($data->seconds_active + $data->seconds_paused) * 3.6, 2);
         $data->distance = round($data->distance / 1000, 2);

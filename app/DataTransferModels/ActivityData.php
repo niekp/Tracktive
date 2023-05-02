@@ -23,9 +23,6 @@ final class ActivityData extends Data
 
     public int $seconds_paused = 0;
 
-    #[DataCollectionOf(Coordinate::class)]
-    public ?DataCollection $coordinates = null;
-
-    #[DataCollectionOf(Speed::class)]
-    public ?DataCollection $speeds = null;
+    #[DataCollectionOf(Point::class)]
+    public ?DataCollection $points = null;
 }

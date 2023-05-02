@@ -26,6 +26,8 @@ class ReprocessDataCommand extends Command
     public function handle()
     {
         foreach (Activity::all() as $activity) {
+            $this->info("Processing activity $activity->id");
+
             (new ProcessActivityStatsAction)($activity);
         }
 
