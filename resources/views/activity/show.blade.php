@@ -2,6 +2,7 @@
 @section('title', $activity->type . ' ' . $stats->start->format('d-m-Y H:i'))
 @section('scripts')
     @include('_partials.map-scripts')
+    @include('_partials.speed-scripts')
 @endsection
 @section('content')
     <h1>{{ $activity->type }} op {{ $stats->start->format('d-m-Y H:i') }} - {{ $stats->stop->format('H:i') }}</h1>
@@ -9,6 +10,7 @@
 
     @include('_partials.map', [ 'activity' => $activity ])
 
+    <h1>Data</h1>
     <div class="form-group row">
         <label for="distance" class="col-sm-2 col-form-label">Afstand</label>
         <div class="col-sm-10">
@@ -45,6 +47,9 @@
             </div>
         </div>
     @endif
+
+    <h1>Grafiek</h1>
+    @include('_partials.speed', [ 'activity' => $activity ])
 
     <div class="pb-5 pt-2">
         <a href="{{ route('activities.edit', $activity->id) }}" class="btn btn-primary">Bewerken</a>
