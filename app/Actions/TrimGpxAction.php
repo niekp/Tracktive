@@ -6,15 +6,13 @@ use App\DataTransferModels\ActivityData;
 use App\DataTransferModels\Point;
 use App\Models\Activity;
 use App\Models\Gpx;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use phpGPX\Models\GpxFile;
-use phpGPX\Models\Point;
 use phpGPX\phpGPX;
 
 final class TrimGpxAction
 {
-    private function countPoints(GpxFile $file)
+    private function countPoints(GpxFile $file): int
     {
         $count = 0;
         foreach ($file->tracks as $track) {

@@ -4,7 +4,6 @@ namespace App\Actions;
 
 use App\DataTransferModels\ActivityData;
 use App\DataTransferModels\Point;
-use App\DataTransferModels\Speed;
 use App\Models\Activity;
 use App\Models\Gpx;
 use DateTime;
