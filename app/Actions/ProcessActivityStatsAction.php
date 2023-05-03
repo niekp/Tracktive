@@ -56,7 +56,7 @@ final class ProcessActivityStatsAction
                         $point->longitude,
                         $point->time,
                         $active,
-                        $duration ? $point->difference / $duration * 3.6 : 0,
+                        $duration ? round($point->difference / $duration * 3.6, 2) : 0,
                     );
 
                     $previous_time = $point->time;
