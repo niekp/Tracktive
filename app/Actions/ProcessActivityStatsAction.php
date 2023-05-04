@@ -56,6 +56,7 @@ final class ProcessActivityStatsAction
                         $point->time,
                         $active,
                         $duration ? round($point->difference / $duration * 3.6, 2) : 0,
+                        $point->extensions?->trackPointExtension?->hr,
                     );
 
                     $previous_time = $point->time;

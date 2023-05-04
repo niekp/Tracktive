@@ -12,7 +12,7 @@ class ReprocessDataCommand extends Command
      * The name and signature of the console command.
      * @var string
      */
-    protected $signature = 'app:reprocess-data';
+    protected $signature = 'app:reprocess-data {id?}';
 
     /**
      * The console command description.
@@ -25,7 +25,14 @@ class ReprocessDataCommand extends Command
      */
     public function handle()
     {
-        foreach (Activity::all() as $activity) {
+        $activities = Activity::query()->when(
+            $this->hasArgument('id'),
+            function ($query)  {
+                $query->where('id', $this->argument('id'));
+            }
+        )->get();
+
+        foreach ($activities as $activity) {
             $this->info("Processing activity $activity->id");
 
             (new ProcessActivityStatsAction)($activity);
