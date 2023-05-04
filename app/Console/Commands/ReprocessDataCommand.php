@@ -26,7 +26,7 @@ class ReprocessDataCommand extends Command
     public function handle()
     {
         $activities = Activity::query()->when(
-            $this->hasArgument('id'),
+            $this->argument('id'),
             function ($query)  {
                 $query->where('id', $this->argument('id'));
             }
