@@ -160,7 +160,7 @@ if (activities.length === 1) {
             event.detail.forEach(function (index) {
                 coord = activities[0].querySelectorAll("coord")[index];
                 var marker = new H.map.Marker({
-                    lat: parseFloat(coord.dataset.lat) - 0.0001,
+                    lat: parseFloat(coord.dataset.lat),
                     lng: parseFloat(coord.dataset.long)
                 }, {icon: blue});
 
