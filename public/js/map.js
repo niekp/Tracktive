@@ -46,6 +46,16 @@ var markers = document.querySelectorAll("[data-container='coordinates'] markers 
 var ui = H.ui.UI.createDefault(map, defaultLayers);
 var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
 
+var blue = new H.map.Icon('<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg2" width="20" height="20">\n' +
+    '<circle id="c2" style="fill:#36a2eb;stroke:#000000;stroke-width:1.25" cx="10" cy="10" r="9.4"></circle>\n' +
+    '</svg>\n');
+var green = new H.map.Icon('<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg2" width="20" height="20">\n' +
+    '<circle id="c2" style="fill:#4bc0c0;stroke:#000000;stroke-width:1.25" cx="10" cy="10" r="9.4"></circle>\n' +
+    '</svg>\n');
+var orange = new H.map.Icon('<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg2" width="20" height="20">\n' +
+    '<circle id="c2" style="fill:#ffcd56;stroke:#000000;stroke-width:1.25" cx="10" cy="10" r="9.4"></circle>\n' +
+    '</svg>\n');
+
 var group = new H.map.Group();
 map.removeObjects(map.getObjects())
 
@@ -87,8 +97,8 @@ activities.forEach(activity => {
         }
     });
 
-    var startMarker = new H.map.Marker(startPoint);
-    var endMarker = new H.map.Marker(endPoint);
+    var startMarker = new H.map.Marker(startPoint, {icon: orange});
+    var endMarker = new H.map.Marker(endPoint, {icon: green});
 
     if (activities.length == 1)
         group.addObjects([routeOutline, routeLine, startMarker, endMarker]);
@@ -136,10 +146,6 @@ function hexToRgbA(hex, alpha) {
 // Marker on hover.
 if (activities.length === 1) {
     var placedMarkers = [];
-    var svg = '<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg2" width="20" height="20">\n' +
-        '<circle id="c2" style="fill:#36a2eb;stroke:#000000;stroke-width:1.25" cx="10" cy="10" r="9.4"></circle>\n' +
-        '</svg>\n';
-    var icon = new H.map.Icon(svg);
 
     document.querySelector("[data-container='speeds']").addEventListener(
         "speed.hover",
@@ -156,7 +162,7 @@ if (activities.length === 1) {
                 var marker = new H.map.Marker({
                     lat: parseFloat(coord.dataset.lat) - 0.0001,
                     lng: parseFloat(coord.dataset.long)
-                }, {icon: icon});
+                }, {icon: blue});
 
                 group.addObject(marker);
             })
