@@ -16,9 +16,6 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="{{ route('activities.index') }}">Activiteiten</a>
-                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('activities.create') }}">Aanmaken</a>
                 </li>
