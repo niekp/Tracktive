@@ -132,3 +132,38 @@ function hexToRgbA(hex, alpha) {
     }
     throw new Error('Bad Hex');
 }
+
+// Marker on hover.
+if (activities.length === 1) {
+    var placedMarkers = [];
+    var svg = '<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg2" width="20" height="20">\n' +
+        '<circle id="c2" style="fill:#36a2eb;stroke:#000000;stroke-width:1.25" cx="10" cy="10" r="9.4"></circle>\n' +
+        '</svg>\n';
+    var icon = new H.map.Icon(svg);
+
+    document.querySelector("[data-container='speeds']").addEventListener(
+        "speed.hover",
+        function(event) {
+            if (placedMarkers) {
+                map.removeObjects(placedMarkers);
+                placedMarkers = [];
+            }
+
+            var group = new H.map.Group();
+
+            event.detail.forEach(function (index) {
+                coord = activities[0].querySelectorAll("coord")[index];
+                var marker = new H.map.Marker({
+                    lat: parseFloat(coord.dataset.lat) - 0.0001,
+                    lng: parseFloat(coord.dataset.long)
+                }, {icon: icon});
+
+                group.addObject(marker);
+            })
+
+            placedMarkers.push(group);
+            map.addObject(group);
+        },
+        false,
+    );
+}

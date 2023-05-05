@@ -10,6 +10,8 @@
 
     @include('_partials.map', [ 'activity' => $activity ])
 
+    @include('_partials.speed', [ 'activity' => $activity ])
+
     <h1>Data</h1>
     <div class="form-group row">
         <label for="distance" class="col-sm-2 col-form-label">Afstand</label>
@@ -47,9 +49,6 @@
             </div>
         </div>
     @endif
-
-    <h1>Grafiek</h1>
-    @include('_partials.speed', [ 'activity' => $activity ])
 
     <div class="pb-5 pt-2">
         <a href="{{ route('activities.edit', $activity->id) }}" class="btn btn-primary">Bewerken</a>
