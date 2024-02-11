@@ -53,7 +53,7 @@
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
         @foreach ($activities as $activity)
             @php
-                $data = $activity->getSummary();
+                $data = $activity->getData();
             @endphp
             <div class="col">
                 <div class="card mb-3">
