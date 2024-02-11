@@ -2,11 +2,9 @@
 
 namespace App\DataTransferModels;
 
-use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Data;
-use Spatie\LaravelData\DataCollection;
 
-final class ActivityData extends Data
+final class ActivitySummary extends Data
 {
     public ?\DateTime $start = null;
 
@@ -22,6 +20,8 @@ final class ActivityData extends Data
 
     public int $seconds_paused = 0;
 
-    #[DataCollectionOf(Point::class)]
-    public ?DataCollection $points = null;
+    public static function fromActivityData(ActivityData $data): static
+    {
+        return static::from($data->toArray());
+    }
 }

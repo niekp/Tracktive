@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\DataTransferModels\ActivityData;
+use App\DataTransferModels\ActivitySummary;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -14,6 +15,7 @@ use Illuminate\Support\Carbon;
  * @property string $type
  * @property Carbon $date
  * @property ActivityData $data
+ * @property ActivitySummary $summary
  * @property string $image
  * @property Gpx $gpx
  */
@@ -25,12 +27,14 @@ class Activity extends Model
         'type',
         'date',
         'data',
+        'summary',
         'image',
     ];
 
     protected $casts = [
         'date' => 'datetime',
         'data' => ActivityData::class,
+        'summary' => ActivitySummary::class,
     ];
 
     public function gpxes(): HasMany
@@ -51,5 +55,10 @@ class Activity extends Model
     public function getData(): ?ActivityData
     {
         return $this->data;
+    }
+
+    public function getSummary(): ?ActivitySummary
+    {
+        return $this->summary ?? ActivitySummary::fromActivityData($this->getData());
     }
 }

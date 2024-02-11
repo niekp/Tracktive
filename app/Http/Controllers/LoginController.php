@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\SendNtfyAction;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 
@@ -35,7 +36,7 @@ final class LoginController
 
     public function login(Request $request)
     {
-        $request->session()->put('login', true);
+        $request->session()->put('login', new User());
         return redirect()->route('activities.index');
     }
 }

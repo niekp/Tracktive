@@ -185,6 +185,7 @@ return [
         /*
          * Package Service Providers...
          */
+        Clockwork\Support\Laravel\ClockworkServiceProvider::class,
 
         /*
          * Application Service Providers...

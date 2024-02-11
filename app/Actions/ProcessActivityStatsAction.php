@@ -3,6 +3,7 @@
 namespace App\Actions;
 
 use App\DataTransferModels\ActivityData;
+use App\DataTransferModels\ActivitySummary;
 use App\DataTransferModels\Point;
 use App\Models\Activity;
 use App\Models\Gpx;
@@ -75,6 +76,7 @@ final class ProcessActivityStatsAction
         $data->distance = round($data->distance / 1000, 2);
 
         $activity->data = $data;
+        $activity->summary = ActivitySummary::fromActivityData($data);
         $activity->date = $data->start;
         $activity->save();
 
