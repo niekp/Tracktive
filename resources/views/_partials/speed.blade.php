@@ -5,7 +5,7 @@
 <div data-container="speeds" style="display: none;">
     <activity>
         @foreach ($activity->getData()->points as $speed)
-            <speed data-speed="{{ $speed->speed }}" data-hr="{{ $speed->heart_rate }}" data-time="{{ $speed->time->format('c') }}"></speed>
+            <speed data-speed="{{ $speed->speed }}" data-pace="{{ $speed->pace }}" data-hr="{{ $speed->heart_rate }}" data-time="{{ $speed->time->format('c') }}"></speed>
         @endforeach
     </activity>
 </div>

@@ -13,6 +13,7 @@ final class Point extends Data
         public DateTime $time,
         public bool $active,
         public float $speed,
+        public ?string $pace,
         public ?float $heart_rate = null,
     ) {
     }

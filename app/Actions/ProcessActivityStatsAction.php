@@ -50,12 +50,17 @@ final class ProcessActivityStatsAction
                         $data->seconds_paused += $duration;
                     }
 
+                    $speed = $duration ? round($point->difference / $duration * 3.6, 2) : 0;
+
+                    $pace_decimal = $speed ? 60 / $speed : 0;
+
                     $points[] = new Point(
                         $point->latitude,
                         $point->longitude,
                         $point->time,
                         $active,
                         $duration ? round($point->difference / $duration * 3.6, 2) : 0,
+                        $duration ? $pace_decimal : null,
                         $point->extensions?->trackPointExtension?->hr,
                     );
 
