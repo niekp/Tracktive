@@ -8,6 +8,7 @@ final class MergeGpxFilesAction
 {
     public function __invoke(array $files): \SplFileInfo
     {
+        libxml_use_internal_errors(true);
         // Try to sort files
         try {
             usort($files, function (string $a, string $b) {

@@ -21,6 +21,7 @@ final class ProcessActivityStatsAction
             throw new \InvalidArgumentException('Activity doesn\'t have a GPX file yet');
         }
 
+        libxml_use_internal_errors(true);
         $gpx_file = phpGPX::load(Storage::path($activity->gpx->file));
 
         $data = new ActivityData();
