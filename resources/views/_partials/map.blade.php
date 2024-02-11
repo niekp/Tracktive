@@ -9,7 +9,7 @@
 
 <div data-container="coordinates" style="display: none;">
     <activity>
-        @foreach ($activity->getData()->points as $point)
+        @foreach ($activity->getPoints() as $point)
             @if (!$point->active)
                 @continue
             @endif

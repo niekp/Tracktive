@@ -3,19 +3,20 @@
 namespace App\Models;
 
 use App\DataTransferModels\ActivityData;
-use App\DataTransferModels\ActivitySummary;
+use App\DataTransferModels\Point;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
+use Spatie\LaravelData\DataCollection;
 
 /**
  * @property string $type
  * @property Carbon $date
  * @property ActivityData $data
- * @property ActivitySummary $summary
+ * @property DataCollection $points
  * @property string $image
  * @property Gpx $gpx
  */
@@ -27,14 +28,14 @@ class Activity extends Model
         'type',
         'date',
         'data',
-        'summary',
+        'points',
         'image',
     ];
 
     protected $casts = [
         'date' => 'datetime',
         'data' => ActivityData::class,
-        'summary' => ActivitySummary::class,
+        'points' => DataCollection::class . ':' . Point::class,
     ];
 
     public function gpxes(): HasMany
@@ -57,8 +58,8 @@ class Activity extends Model
         return $this->data;
     }
 
-    public function getSummary(): ?ActivitySummary
+    public function getPoints(): ?DataCollection
     {
-        return $this->summary ?? ActivitySummary::fromActivityData($this->getData());
+        return $this->points;
     }
 }

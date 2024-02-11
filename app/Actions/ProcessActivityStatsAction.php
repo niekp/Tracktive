@@ -3,7 +3,6 @@
 namespace App\Actions;
 
 use App\DataTransferModels\ActivityData;
-use App\DataTransferModels\ActivitySummary;
 use App\DataTransferModels\Point;
 use App\Models\Activity;
 use App\Models\Gpx;
@@ -71,13 +70,12 @@ final class ProcessActivityStatsAction
             }
         }
 
-        $data->points = new DataCollection(Point::class, $points);
         $data->average_speed_active = round($data->distance / $data->seconds_active * 3.6, 2);
         $data->average_speed_total = round($data->distance / ($data->seconds_active + $data->seconds_paused) * 3.6, 2);
         $data->distance = round($data->distance / 1000, 2);
 
         $activity->data = $data;
-        $activity->summary = ActivitySummary::fromActivityData($data);
+        $activity->points = new DataCollection(Point::class, $points);
         $activity->date = $data->start;
         $activity->save();
 
