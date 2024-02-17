@@ -64,7 +64,7 @@ final class PhoneTrackService
 			$activities[] = $activity;
 		}
 
-		return $activities;
+		return array_reverse($activities);
 	}
 
 	private function shiftTillGap(array $points): array
