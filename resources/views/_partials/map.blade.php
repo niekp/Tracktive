@@ -1,4 +1,7 @@
-<div style="width: {{ $activity->image ? '100%' : '640px' }}; height: 480px" id="mapContainer"></div>
+@php
+    $id = Str::uuid()
+@endphp
+<div class="mapContainer" style="width: {{ $activity->image ? '100%' : '640px' }}; height: 480px" id="mapContainer{{ $id }}"></div>
 <input type="hidden"
        data-configuration
        data-here-api-key="{{ Config::get('here.api_key') }}"
@@ -7,7 +10,7 @@
        data-capture-id="{{ $activity->image ? null : $activity->id }}"
 />
 
-<div data-container="coordinates" style="display: none;">
+<div data-container="coordinates" data-map-container="{{ $id }}" style="display: none;">
     <activity>
         @foreach ($activity->getPoints() as $point)
             @if (!$point->active)

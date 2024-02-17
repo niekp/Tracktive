@@ -1,4 +1,5 @@
 var config = document.querySelector("[data-configuration]");
+var activities = document.querySelectorAll("[data-container='coordinates']");
 
 var platform = new H.service.Platform({
     apikey: config.dataset.hereApiKey,
@@ -7,44 +8,6 @@ var platform = new H.service.Platform({
 });
 
 var defaultLayers = platform.createDefaultLayers();
-
-var map = new H.Map(
-    document.getElementById('mapContainer'),
-    defaultLayers.vector.normal.map,
-);
-
-var captured = false;
-if (config.dataset.captureId) {
-    map.getEngine().addEventListener('render', (evt) => {
-        if (map.getEngine() === evt.target) {
-            if (!captured) {
-                map.capture(function(capturedCanvas) {
-                    fetch("/capture", {
-                        method: "POST",
-                        body: JSON.stringify({
-                            capture_id: config.dataset.captureId,
-                            data: capturedCanvas.toDataURL("image/png"),
-                        }),
-                        headers: {
-                            "Content-type": "application/json; charset=UTF-8",
-                            'X-CSRF-Token': document.querySelector('meta[name="_token"]').content,
-                        }
-                    }).then(function () {
-                        document.getElementById('mapContainer').style.width = '100%';
-                        map.getViewPort().resize();
-                    });
-                });
-                captured = true;
-            }
-        }
-    });
-}
-
-var activities = document.querySelectorAll("[data-container='coordinates'] activity");
-var markers = document.querySelectorAll("[data-container='coordinates'] markers coord");
-
-var ui = H.ui.UI.createDefault(map, defaultLayers);
-var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
 
 var blue = new H.map.Icon('<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg2" width="20" height="20">\n' +
     '<circle id="c2" style="fill:#36a2eb;stroke:#000000;stroke-width:1.25" cx="10" cy="10" r="9.4"></circle>\n' +
@@ -56,15 +19,25 @@ var orange = new H.map.Icon('<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xm
     '<circle id="c2" style="fill:#ffcd56;stroke:#000000;stroke-width:1.25" cx="10" cy="10" r="9.4"></circle>\n' +
     '</svg>\n');
 
-var group = new H.map.Group();
-map.removeObjects(map.getObjects())
+
+var map;
 
 // Activities
 activities.forEach(activity => {
+    var group = new H.map.Group();
+
+    map = new H.Map(
+        document.getElementById('mapContainer' + activity.dataset.mapContainer),
+        defaultLayers.vector.normal.map,
+    );
+
+    ui = H.ui.UI.createDefault(map, defaultLayers);
+    var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+
     var startPoint = null;
     routeString = new H.geo.LineString();
 
-    activity.querySelectorAll("coord").forEach(coord => {
+    activity.querySelectorAll("activity coord").forEach(coord => {
         var latitude = parseFloat(coord.dataset.lat);
         var longitude = parseFloat(coord.dataset.long);
 
@@ -104,27 +77,18 @@ activities.forEach(activity => {
         group.addObjects([routeOutline, routeLine, startMarker, endMarker]);
     else
         group.addObjects([routeOutline, routeLine]);
-});
 
-// Markers
-markers.forEach(marker => {
-    var marker = new H.map.Marker({
-        lat: parseFloat(marker.dataset.lat),
-        lng: parseFloat(marker.dataset.long)
+    map.addObject(group);
+
+    var bounds = group.getBoundingBox();
+    bounds.a -= 0.002;
+    bounds.f -= 0.002;
+    bounds.b += 0.002;
+    bounds.c += 0.002;
+
+    map.getViewModel().setLookAtData({
+        bounds: bounds
     });
-
-    group.addObject(marker);
-});
-
-map.addObject(group);
-
-var bounds = group.getBoundingBox();
-bounds.a -= 0.002;
-bounds.f -= 0.002;
-bounds.b += 0.002;
-bounds.c += 0.002;
-map.getViewModel().setLookAtData({
-    bounds: bounds
 });
 
 function hexToRgbA(hex, alpha) {
@@ -143,8 +107,37 @@ function hexToRgbA(hex, alpha) {
     throw new Error('Bad Hex');
 }
 
-// Marker on hover.
 if (activities.length === 1) {
+    var captured = false;
+    if (config.dataset.captureId) {
+        map.getEngine().addEventListener('render', (evt) => {
+            if (map.getEngine() === evt.target) {
+                if (!captured) {
+                    map.capture(function (capturedCanvas) {
+                        fetch("/capture", {
+                            method: "POST",
+                            body: JSON.stringify({
+                                capture_id: config.dataset.captureId,
+                                data: capturedCanvas.toDataURL("image/png"),
+                            }),
+                            headers: {
+                                "Content-type": "application/json; charset=UTF-8",
+                                'X-CSRF-Token': document.querySelector('meta[name="_token"]').content,
+                            }
+                        }).then(function () {
+                            document.querySelectorAll(".mapContainer")[0].style.width = '100%';
+                            map.getViewPort().resize();
+                        });
+                    });
+                    captured = true;
+                }
+            }
+        });
+    }
+}
+
+// Marker on hover.
+if (activities.length === 1 && document.querySelector("[data-container='speeds']")) {
     var placedMarkers = [];
 
     document.querySelector("[data-container='speeds']").addEventListener(

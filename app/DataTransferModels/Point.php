@@ -15,6 +15,7 @@ final class Point extends Data
         public float $speed,
         public ?string $pace,
         public ?float $heart_rate = null,
+        public ?float $altitude = null,
     ) {
     }
 }

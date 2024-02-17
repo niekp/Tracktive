@@ -21,7 +21,4 @@ final class ActivityData extends Data
     public int $seconds_active = 0;
 
     public int $seconds_paused = 0;
-
-    #[DataCollectionOf(Point::class)]
-    public ?DataCollection $points = null;
 }
