@@ -18,6 +18,9 @@
                 <h5 class="card-title">{{ $activity->type }}</h5>
                 <p class="card-text">
                     {{ $data->start->format('d-m-Y H:i') }} - {{ $data->stop->format('H:i') }}<br />
+                    <table>
+                        <tr><td>Snelheid:</td><td>{{ $data->average_speed_total }} km/u</td></tr>
+                    </table>
                 </p>
                 <a href="{{ route('gpx.show', $key) }}" class="btn btn-primary">Bekijken</a>
             </div>

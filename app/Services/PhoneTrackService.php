@@ -49,17 +49,24 @@ final class PhoneTrackService
 					$data['lon'],
 					Carbon::createFromTimestamp($data['timestamp']),
 					true,
-					$data['speed'] ?? 0,
+					($data['speed'] ?? 0) * 3.6,
 					null,
 					null,
 					$data['altitude'],
 				);
 			}, $slice);
 
+			$speed = round(array_sum(array_map(fn (Point $point) => $point->speed, $points)) / count($points), 2);
+
+			if ($speed > 20 || count($points) < 5) {
+				continue;
+			}
+
 			$activity->points = new DataCollection(Point::class, $points);
 			$activity->data = new ActivityData();
 			$activity->data->start = reset($points)->time;
 			$activity->data->stop = end($points)->time;
+			$activity->data->average_speed_total = $speed;
 			$activity->image = true;
 			$activities[] = $activity;
 		}
@@ -72,29 +79,20 @@ final class PhoneTrackService
 		$gathered = [];
 
 		$previous_timestamp = 0;
-		$last_movement = 0;
-		$previous_speed = 0;
-		$speeds = [];
 
-		foreach ($points as $point) {
-			$average_speed = $speeds ? array_sum($speeds) / count($speeds) : 0;
+		foreach ($points as $key => $point) {
+			$speed = $point['speed'] * 3.6;
+			$average_speed = $this->getAverage($gathered);
+			$upcoming_average = $this->getAverage(array_slice($points, $key, 10));
+
 			if (
-				(
+				( // No movement in 2 minutes.
 					$previous_timestamp > 0
 					&& $point['timestamp'] - $previous_timestamp > 120
 				)
-				|| (
-					$last_movement > 0
-					&& $point['timestamp'] - $last_movement > 120
-				)
-				|| (
-					$previous_speed >= 7
-					&& $point['speed'] < 7
-				)
-				|| (
-					$average_speed < 7
-					&& $point['speed'] >= 7
-					&& count($gathered) > 5
+				|| ( // Diff in speed of > km/h to break the parts.
+					($average_speed && abs($speed - $average_speed) >= 5)
+					&& (!$upcoming_average || abs($speed - $upcoming_average) >= 5)
 				)
 			) {
 				break;
@@ -103,19 +101,29 @@ final class PhoneTrackService
 			$gathered[] = $point;
 
 			$previous_timestamp = $point['timestamp'];
-			$previous_speed = $point['speed'];
-			$speeds[] = $point['speed'];
-			if ($point['speed'] > 2) {
-				$last_movement = $previous_timestamp;
-			}
 		}
-
-		$gathered = array_slice($points, 0, count($gathered));
 
 		return [
 			'slice' => array_slice($gathered, 0, count($gathered) - 1),
-			'remaining' => array_slice($points, count($gathered)),
+			'remaining' => array_slice($points, count($gathered) + 1),
 		];
+	}
+
+	private function getAverage(array $points)
+	{
+		if (!$points) {
+			return false;
+		}
+
+		$previous = 0;
+		foreach ($points as $point) {
+			if ($previous && $point['timestamp'] - $previous > 120) {
+				return false;
+			}
+			$previous = $point['timestamp'];
+		}
+
+		return array_sum(array_map(fn ($point) => $point['speed'] * 3.6, $points)) / count($points);
 	}
 
 	private function getPoints()
