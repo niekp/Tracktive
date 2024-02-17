@@ -113,7 +113,7 @@ final class PhoneTrackService
 		$gathered = array_slice($points, 0, count($gathered));
 
 		return [
-			'slice' => $gathered,
+			'slice' => array_slice($gathered, 0, count($gathered) - 1),
 			'remaining' => array_slice($points, count($gathered)),
 		];
 	}
