@@ -88,8 +88,8 @@ final class PhoneTrackService
 					&& $point['timestamp'] - $last_movement > 120
 				)
 				|| (
-					$previous_speed > 25
-					&& $point['speed'] < 8
+					$previous_speed >= 7
+					&& $point['speed'] < 7
 				)
 				|| (
 					$average_speed < 7
@@ -122,7 +122,7 @@ final class PhoneTrackService
 	{
 		$response = $this->client->request(
 			'GET',
-			$this->phone_track_url . '?limit=400',
+			$this->phone_track_url . '?limit=500',
 		);
 
 		$data = json_decode($response->getBody()->getContents(), true);
