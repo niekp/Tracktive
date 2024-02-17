@@ -14,7 +14,7 @@ final class GpxController extends Controller
     public function index(PhoneTrackService $service)
     {
         return view('gpx.index', [
-            'activities' => $service->fetchActivities(),
+            'activities' => array_reverse($service->fetchActivities()),
         ]);
     }
 
