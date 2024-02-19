@@ -29,7 +29,6 @@ final class PhoneTrackService
 		while (
 			($part = $this->shiftTillGap($part['remaining'] ?? $points))
 		) {
-			dump($part);
 			if (count($part['slice']) > 1) {
 				$slices[] = $part['slice'];
 			}
@@ -136,7 +135,7 @@ final class PhoneTrackService
 	{
 		$response = $this->client->request(
 			'GET',
-			$this->phone_track_url . '?limit=20',
+			$this->phone_track_url . '?limit=500',
 		);
 
 		$data = json_decode($response->getBody()->getContents(), true);

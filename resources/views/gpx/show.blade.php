@@ -8,6 +8,13 @@
 
 @include('_partials.map', [ 'activity' => $activity ])
 
+<h1>Data</h1>
+<div class="form-group row">
+    <label for="distance" class="col-sm-2 col-form-label">Afstand</label>
+    <div class="col-sm-10">
+        <input type="text" readonly class="form-control-plaintext" id="distance" value="{{ $stats->distance }} km">
+    </div>
+</div>
 <div class="form-group row">
     <label for="speed" class="col-sm-2 col-form-label">Gemiddelde snelheid</label>
     <div class="col-sm-10">

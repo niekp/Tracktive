@@ -13,7 +13,7 @@ use Spatie\LaravelData\DataCollection;
 
 final class GpxService
 {
-	public function create(ActivityData $data, DataCollection $points)
+	public function create(ActivityData $data, DataCollection $points): GpxFile
 	{
 		$gpx_file = new GpxFile();
 
@@ -43,10 +43,6 @@ final class GpxService
 		// Add track to file
 		$gpx_file->tracks[] = $track;
 
-		// GPX output
-		$filename = tempnam(sys_get_temp_dir(), 'gpx');
-		$gpx_file->save($filename, \phpGPX\phpGPX::XML_FORMAT);
-
-		return $filename;
+		return $gpx_file;
 	}
 }
