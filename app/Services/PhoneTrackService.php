@@ -29,6 +29,7 @@ final class PhoneTrackService
 		while (
 			($part = $this->shiftTillGap($part['remaining'] ?? $points))
 		) {
+			dump($part);
 			if (count($part['slice']) > 1) {
 				$slices[] = $part['slice'];
 			}
@@ -94,6 +95,10 @@ final class PhoneTrackService
 					($average_speed && abs($speed - $average_speed) >= 5)
 					&& (!$upcoming_average || abs($speed - $upcoming_average) >= 5)
 				)
+				|| ( // Was moving, isn't moving in the future
+					$average_speed >= 1
+					&& $upcoming_average < 1
+				)
 			) {
 				break;
 			}
@@ -104,7 +109,8 @@ final class PhoneTrackService
 		}
 
 		return [
-			'slice' => array_slice($gathered, 0, count($gathered) - 1),
+			'average' => $average_speed,
+			'slice' => array_slice($gathered, 0, count($gathered)),
 			'remaining' => array_slice($points, count($gathered) + 1),
 		];
 	}
@@ -130,7 +136,7 @@ final class PhoneTrackService
 	{
 		$response = $this->client->request(
 			'GET',
-			$this->phone_track_url . '?limit=500',
+			$this->phone_track_url . '?limit=20',
 		);
 
 		$data = json_decode($response->getBody()->getContents(), true);
