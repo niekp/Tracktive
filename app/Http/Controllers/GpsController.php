@@ -8,13 +8,12 @@ use App\Services\GpxService;
 use App\Services\PhoneTrackService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-use phpGPX\Models\Point;
 
-final class GpxController extends Controller
+final class GpsController extends Controller
 {
     public function index(PhoneTrackService $service)
     {
-        return view('gpx.index', [
+        return view('gps.index', [
             'activities' => $service->fetchActivities(),
         ]);
     }
@@ -27,7 +26,7 @@ final class GpxController extends Controller
         $activity = $service->fetchActivities()[$index];
         $this->calculateStats($activity, $gpx_service);
 
-        return view('gpx.show', [
+        return view('gps.show', [
             'activity' => $activity,
             'stats' => $activity->getData(),
             'index' => $index,
@@ -70,5 +69,20 @@ final class GpxController extends Controller
         $activity = Activity::query()->orderByDesc('id')->first();
 
         return Redirect::route('activities.edit', $activity->id);
+    }
+
+    public function download(
+        int $index,
+        PhoneTrackService $service,
+        GpxService $gpx_service,
+    ) {
+        $activity = $service->fetchActivities()[$index];
+
+        // Build GPX
+        $file = $gpx_service->create($activity->getData(), $activity->getPoints());
+        $filename = tempnam(sys_get_temp_dir(), 'gpx');
+        $file->save($filename, \phpGPX\phpGPX::XML_FORMAT);
+
+        return response()->download($filename);
     }
 }

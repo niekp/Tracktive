@@ -26,7 +26,8 @@ Route::get('/login/set-token', [\App\Http\Controllers\LoginController::class, 'l
 Route::middleware('auth:web')->group(function () {
     Route::resource('activities', \App\Http\Controllers\ActivityController::class);
     Route::get('activities/{activity}/download', [\App\Http\Controllers\ActivityController::class, 'download'])->name('activities.download');
-    Route::resource('gpx', \App\Http\Controllers\GpxController::class);
+    Route::resource('gps', \App\Http\Controllers\GpsController::class);
+    Route::get('gps/{index}/download', [\App\Http\Controllers\GpsController::class, 'download'])->name('gps.download');
 });
 
 Route::post('capture', [\App\Http\Controllers\ActivityController::class, 'capture']);

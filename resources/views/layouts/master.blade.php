@@ -21,7 +21,7 @@
                     <a class="nav-link" href="{{ route('activities.create') }}">Aanmaken</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('gpx.index') }}">GPS</a>
+                    <a class="nav-link" href="{{ route('gps.index') }}">GPS</a>
                 </li>
             </ul>
         </div>

@@ -22,7 +22,7 @@
                         <tr><td>Snelheid:</td><td>{{ $data->average_speed_total }} km/u</td></tr>
                     </table>
                 </p>
-                <a href="{{ route('gpx.show', $key) }}" class="btn btn-primary">Bekijken</a>
+                <a href="{{ route('gps.show', $key) }}" class="btn btn-primary">Bekijken</a>
             </div>
         </div>
     </div>

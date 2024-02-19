@@ -136,7 +136,7 @@ final class PhoneTrackService
 	{
 		$response = $this->client->request(
 			'GET',
-			$this->phone_track_url . '?limit=100',
+			$this->phone_track_url . '?limit=500',
 		);
 
 		$data = json_decode($response->getBody()->getContents(), true);

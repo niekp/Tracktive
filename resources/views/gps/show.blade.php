@@ -23,7 +23,8 @@
 </div>
 
 <div class="pb-5 pt-2">
-    <a href="{{ route('gpx.create', ['index' => $index]) }}" class="btn btn-primary ms-2">Importeren</a>
-    <a href="{{ route('gpx.index') }}" class="btn btn-secondary ms-2">Terug</a>
+    <a href="{{ route('gps.create', ['index' => $index]) }}" class="btn btn-primary ms-2">Importeren</a>
+    <a href="{{ route('gps.download', ['index' => $index]) }}" class="btn btn-secondary ms-2">Download</a>
+    <a href="{{ route('gps.index') }}" class="btn btn-secondary ms-2">Terug</a>
 </div>
 @endsection
