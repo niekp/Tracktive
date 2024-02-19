@@ -7,7 +7,6 @@ var platform = new H.service.Platform({
     app_code: config.dataset.hereAppCode
 });
 
-var defaultLayers = platform.createDefaultLayers();
 
 var blue = new H.map.Icon('<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg2" width="20" height="20">\n' +
     '<circle id="c2" style="fill:#36a2eb;stroke:#000000;stroke-width:1.25" cx="10" cy="10" r="9.4"></circle>\n' +
@@ -19,23 +18,25 @@ var orange = new H.map.Icon('<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xm
     '<circle id="c2" style="fill:#ffcd56;stroke:#000000;stroke-width:1.25" cx="10" cy="10" r="9.4"></circle>\n' +
     '</svg>\n');
 
-
 var map;
 
 // Activities
 activities.forEach(activity => {
     var group = new H.map.Group();
+    var defaultLayers = platform.createDefaultLayers();
 
     map = new H.Map(
         document.getElementById('mapContainer' + activity.dataset.mapContainer),
         defaultLayers.vector.normal.map,
     );
 
-    ui = H.ui.UI.createDefault(map, defaultLayers);
-    var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+    if (activities.length === 1) {
+        H.ui.UI.createDefault(map, defaultLayers);
+        new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+    }
 
     var startPoint = null;
-    routeString = new H.geo.LineString();
+    var routeString = new H.geo.LineString();
 
     activity.querySelectorAll("activity coord").forEach(coord => {
         var latitude = parseFloat(coord.dataset.lat);

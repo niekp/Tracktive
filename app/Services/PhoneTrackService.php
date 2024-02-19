@@ -96,6 +96,7 @@ final class PhoneTrackService
 				)
 				|| ( // Was moving, isn't moving in the future
 					$average_speed >= 1
+					&& $upcoming_average !== false
 					&& $upcoming_average < 1
 				)
 			) {
@@ -135,7 +136,7 @@ final class PhoneTrackService
 	{
 		$response = $this->client->request(
 			'GET',
-			$this->phone_track_url . '?limit=500',
+			$this->phone_track_url . '?limit=100',
 		);
 
 		$data = json_decode($response->getBody()->getContents(), true);
