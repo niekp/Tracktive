@@ -85,20 +85,26 @@ final class PhoneTrackService
 			$average_speed = $this->getAverage($gathered);
 			$upcoming_average = $this->getAverage(array_slice($points, $key, 10));
 
-			if (
-				( // No movement in 2 minutes.
-					$previous_timestamp > 0
-					&& $point['timestamp'] - $previous_timestamp > 120
-				)
-				|| ( // Diff in speed of > km/h to break the parts.
-					($average_speed && abs($speed - $average_speed) >= 5)
-					&& (!$upcoming_average || abs($speed - $upcoming_average) >= 5)
-				)
-				|| ( // Was moving, isn't moving in the future
-					$average_speed >= 1
-					&& $upcoming_average !== false
-					&& $upcoming_average < 1
-				)
+			if ( // No movement in 2 minutes.
+				$previous_timestamp > 0
+				&& $point['timestamp'] - $previous_timestamp > 120
+			) {
+				break;
+			}
+
+			if ( // Did the average speed change by 5km/h
+				$average_speed
+				&& abs($speed - $average_speed) >= 5
+				&& $upcoming_average !== false // Do we keep moving in the future.
+				&& (abs($average_speed - $upcoming_average) >= 5 || $upcoming_average < 1) // And is the future average also different or 0
+			) {
+				break;
+			}
+
+			if ( // Was moving, isn't moving in the future
+				$average_speed >= 1
+				&& $upcoming_average !== false
+				&& $upcoming_average < 1
 			) {
 				break;
 			}
