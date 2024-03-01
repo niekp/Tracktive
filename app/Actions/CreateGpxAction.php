@@ -16,9 +16,13 @@ final class CreateGpxAction
 
         rename($path, $destination . '/' . $filename);
 
-        return $activity->gpxes()->create([
+        $gpx = $activity->gpxes()->create([
             'file' => 'gpx/' . $filename,
             'version' => $version,
         ]);
+
+        $activity->unsetRelation('gpx');
+
+        return $gpx;
     }
 }

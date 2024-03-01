@@ -114,9 +114,14 @@ final class PhoneTrackService
 			$previous_timestamp = $point['timestamp'];
 		}
 
+		// Filter inaccurate locations.
+		$slice = array_values(array_filter($gathered, function (array $data) {
+			return $data['accuracy'] < 10;
+		}));
+
 		return [
 			'average' => $average_speed,
-			'slice' => array_slice($gathered, 0, count($gathered)),
+			'slice' => $slice,
 			'remaining' => array_slice($points, count($gathered) + 1),
 		];
 	}
@@ -142,7 +147,7 @@ final class PhoneTrackService
 	{
 		$response = $this->client->request(
 			'GET',
-			$this->phone_track_url . '?limit=500',
+			$this->phone_track_url . '?limit=600',
 		);
 
 		$data = json_decode($response->getBody()->getContents(), true);

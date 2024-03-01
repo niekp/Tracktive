@@ -8,7 +8,7 @@ use App\Models\Gpx;
 use Illuminate\Support\Facades\Storage;
 use phpGPX\phpGPX;
 
-final class TrimGpxAction
+final class RemoveInaccuracyAction
 {
     /**
      * @param Point[] $points
@@ -25,8 +25,9 @@ final class TrimGpxAction
 
             $previous_time = $point->time;
 
-            // >1.8km/u or already started.
-            if (($duration && $point->difference / $duration > 0.5) || $filtered_points) {
+            // Filter out all points > 50km/u. This is a sports-tracker and i'm not that fast.
+            $speed = $duration ? round($point->difference / $duration * 3.6, 2) : 0;
+            if ($speed <= 50) {
                 $filtered_points[] = $point;
             }
         }
@@ -47,9 +48,6 @@ final class TrimGpxAction
         foreach ($gpx_file->tracks as $track) {
             foreach ($track->segments as $segment) {
                 $segment->points = $this->filterPoints($segment->points);
-                $segment->points = array_reverse(
-                    $this->filterPoints(array_reverse($segment->points))
-                );
             }
         }
 
