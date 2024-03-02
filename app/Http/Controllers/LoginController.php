@@ -23,6 +23,10 @@ final class LoginController
             return view('login.login');
         }
 
+        if (in_array($request->ip(), config('auth.trusted_ips'))) {
+            return $this->login($request);
+        }
+
         ($this->send_ntfy_action)(
             'Verzoek tot login',
             null,

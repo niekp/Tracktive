@@ -2,6 +2,8 @@
 
 return [
 
+    'trusted_ips' => array_map('trim', explode(',', env('TRUSTED_IPS', []))),
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Defaults
