@@ -3,9 +3,10 @@
 namespace App\Providers;
 
 use App\Console\Commands\CreatePersonCommand;
+use App\Console\Commands\GarbageCollectionCommand;
+use App\Console\Commands\ImportPhoneTrackCommand;
 use App\Console\Commands\NtfyCommand;
 use App\Console\Commands\ReprocessDataCommand;
-use App\Cronjobs\GarbageCollectionCommand;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
