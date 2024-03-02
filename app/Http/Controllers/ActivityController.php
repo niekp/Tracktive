@@ -21,6 +21,7 @@ final class ActivityController extends Controller
 
         $activities = Activity::query()
             ->whereNotNull('data')
+            ->whereNotNull('type')
             ->with('persons')
             ->orderByDesc('date');
 

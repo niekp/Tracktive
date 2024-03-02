@@ -45,4 +45,18 @@ final class GpxService
 
 		return $gpx_file;
 	}
+
+	public function getDistance(GpxFile $gpx_file): float
+	{
+		$distance = 0;
+		foreach ($gpx_file->tracks as $track) {
+			foreach ($track->segments as $segment) {
+				foreach ($segment->getPoints() as $point) {
+					$distance += $point->difference;
+				}
+			}
+		}
+
+		return round($distance / 1000, 2);
+	}
 }

@@ -24,29 +24,15 @@ final class GpsController extends Controller
         GpxService $gpx_service,
     ) {
         $activity = $service->fetchActivities()[$index];
-        $this->calculateStats($activity, $gpx_service);
+        $activity->data->distance = $gpx_service->getDistance(
+            $gpx_service->create($activity->getData(), $activity->getPoints()),
+        );
 
         return view('gps.show', [
             'activity' => $activity,
             'stats' => $activity->getData(),
             'index' => $index,
         ]);
-    }
-
-    private function calculateStats(Activity $activity, GpxService $gpx_service)
-    {
-        $gpx_file = $gpx_service->create($activity->getData(), $activity->getPoints());
-
-        $distance = 0;
-        foreach ($gpx_file->tracks as $track) {
-            foreach ($track->segments as $segment) {
-                foreach ($segment->getPoints() as $point) {
-                    $distance += $point->difference;
-                }
-            }
-        }
-
-        $activity->data->distance = round($distance / 1000, 2);
     }
 
     public function create(
@@ -62,7 +48,6 @@ final class GpsController extends Controller
         $file = $gpx_service->create($activity->getData(), $activity->getPoints());
         $filename = tempnam(sys_get_temp_dir(), 'gpx');
         $file->save($filename, \phpGPX\phpGPX::XML_FORMAT);
-
 
         // Trigger GpxUpload to import data.
         GpxUploaded::dispatch($filename);

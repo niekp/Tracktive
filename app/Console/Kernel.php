@@ -12,7 +12,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('app:ntfy')->everyFiveMinutes();
+        // $schedule->command('app:ntfy')->everyFiveMinutes();
+        $schedule->command('app:garbage-collect')->daily();
+        $schedule->command('app:import-phonetrack')->everyFiveMinutes();
     }
 
     /**
