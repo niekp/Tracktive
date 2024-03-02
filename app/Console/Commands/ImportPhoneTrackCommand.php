@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Cronjobs;
+namespace App\Console\Commands;
 
 use App\Actions\SendNtfyAction;
 use App\Events\GpxUploaded;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Cronjobs;
+namespace App\Console\Commands;
 
 use App\Models\Activity;
 use Carbon\Carbon;

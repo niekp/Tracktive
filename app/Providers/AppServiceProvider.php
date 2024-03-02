@@ -6,7 +6,6 @@ use App\Console\Commands\CreatePersonCommand;
 use App\Console\Commands\NtfyCommand;
 use App\Console\Commands\ReprocessDataCommand;
 use App\Cronjobs\GarbageCollectionCommand;
-use App\Cronjobs\ImportPhoneTrackCommand;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
