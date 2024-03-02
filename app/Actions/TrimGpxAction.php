@@ -17,7 +17,7 @@ final class TrimGpxAction
     public function filterPoints(array $points): array
     {
         $filtered_points = [];
-        foreach ($points as $point) {
+        foreach ($points as $key => $point) {
             $duration = 0;
             if (isset($previous_time)) {
                 $duration = abs($point->time->getTimestamp() - $previous_time->getTimestamp());
@@ -27,6 +27,10 @@ final class TrimGpxAction
 
             // >1.8km/u or already started.
             if (($duration && $point->difference / $duration > 0.5) || $filtered_points) {
+                // Add previous point when the first movement is detected.
+                if (!$filtered_points && isset($points[$key - 1])) {
+                    $filtered_points[] = $points[$key - 1];
+                }
                 $filtered_points[] = $point;
             }
         }
@@ -46,10 +50,10 @@ final class TrimGpxAction
 
         foreach ($gpx_file->tracks as $track) {
             foreach ($track->segments as $segment) {
-                $segment->points = $this->filterPoints($segment->points);
-                $segment->points = array_reverse(
+                $segment->points = array_values($this->filterPoints($segment->points));
+                $segment->points = array_values(array_reverse(
                     $this->filterPoints(array_reverse($segment->points))
-                );
+                ));
             }
         }
 
