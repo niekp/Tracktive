@@ -116,7 +116,7 @@ final class PhoneTrackService
 
 		// Filter inaccurate locations.
 		$slice = array_values(array_filter($gathered, function (array $data) {
-			return $data['accuracy'] < 10;
+			return $data['accuracy'] <= 25;
 		}));
 
 		return [
