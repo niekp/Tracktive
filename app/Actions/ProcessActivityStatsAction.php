@@ -44,6 +44,10 @@ final class ProcessActivityStatsAction
                     }
 
                     $active = $duration && $point->difference / $duration > 0.5; // 1.8km/u
+                    // Set previous point to active.
+                    if ($active && $points && !end($points)->active) {
+                        end($points)->active = true;
+                    }
 
                     if ($active) {
                         $data->seconds_active += $duration;
