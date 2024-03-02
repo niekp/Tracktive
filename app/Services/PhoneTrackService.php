@@ -122,7 +122,7 @@ final class PhoneTrackService
 		return [
 			'average' => $average_speed,
 			'slice' => $slice,
-			'remaining' => array_slice($points, count($gathered) + 1),
+			'remaining' => array_slice($points, count($gathered)),
 		];
 	}
 
