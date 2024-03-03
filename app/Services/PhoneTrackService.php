@@ -12,6 +12,8 @@ use Spatie\LaravelData\DataCollection;
 
 final class PhoneTrackService
 {
+	private const NO_MOVEMENT_TIMEOUT = (60 * 10);
+
 	public function __construct(
 		private Client $client,
 		private ?string $phone_track_url = null,
@@ -87,14 +89,29 @@ final class PhoneTrackService
 
 		foreach ($points as $key => $point) {
 			$speed = $point['speed'] * 3.6;
+			$previous_point = $points[$key - 1] ?? null;
 			$average_speed = $this->getAverage($gathered);
 			$upcoming_average = $this->getAverage(array_slice($points, $key, 10));
 
 			if ( // No movement in 10 minutes.
 				$previous_timestamp > 0
-				&& $point['timestamp'] - $previous_timestamp > (60 * 10)
+				&& $point['timestamp'] - $previous_timestamp >= self::NO_MOVEMENT_TIMEOUT
 			) {
 				$reason = 'no movement';
+				break;
+			}
+
+			// Too much distance between points
+			if (
+				$previous_point
+				&& $this->distance(
+					$previous_point['lat'],
+					$previous_point['lon'],
+					$point['lat'],
+					$point['lon']
+				) > 0.5
+			) {
+				$reason = 'big jump';
 				break;
 			}
 
@@ -104,7 +121,7 @@ final class PhoneTrackService
 				&& $upcoming_average !== false // Do we keep moving in the future.
 				&& (abs($average_speed - $upcoming_average) >= 5 || $upcoming_average < 1) // And is the future average also different or 0
 			) {
-				$reason = 'changed by 5kmh';
+				$reason = 'changed by ' . round(abs($speed - $average_speed)) . 'kmh';
 				break;
 			}
 
@@ -135,6 +152,21 @@ final class PhoneTrackService
 		];
 	}
 
+	private function distance($lat1, $lon1, $lat2, $lon2)
+	{
+		if (($lat1 == $lat2) && ($lon1 == $lon2)) {
+			return 0;
+		} else {
+			$theta = $lon1 - $lon2;
+			$dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+			$dist = acos($dist);
+			$dist = rad2deg($dist);
+			$miles = $dist * 60 * 1.1515;
+
+			return ($miles * 1.609344);
+		}
+	}
+
 	private function getAverage(array $points)
 	{
 		if (!$points) {
@@ -143,7 +175,7 @@ final class PhoneTrackService
 
 		$previous = 0;
 		foreach ($points as $point) {
-			if ($previous && $point['timestamp'] - $previous > 120) {
+			if ($previous && $point['timestamp'] - $previous >= self::NO_MOVEMENT_TIMEOUT) {
 				return false;
 			}
 			$previous = $point['timestamp'];
