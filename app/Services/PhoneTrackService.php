@@ -26,11 +26,13 @@ final class PhoneTrackService
 		$points = $this->getPoints();
 
 		$slices = [];
+		$reasons = [];
 		while (
 			($part = $this->shiftTillGap($part['remaining'] ?? $points))
 		) {
 			if (count($part['slice']) > 1) {
 				$slices[] = $part['slice'];
+				$reasons[] = $part['reason'];
 			}
 
 			if (!$part['remaining']) {
@@ -39,7 +41,7 @@ final class PhoneTrackService
 		}
 
 		$activities = [];
-		foreach ($slices as $slice) {
+		foreach ($slices as $key => $slice) {
 			$activity = new Activity();
 			$activity->date = Carbon::createFromTimestamp($slice[0]['timestamp']);
 
@@ -68,7 +70,9 @@ final class PhoneTrackService
 			$activity->data->stop = end($points)->time;
 			$activity->data->average_speed_total = $speed;
 			$activity->image = true;
+			$activity->reason = $reasons[$key];
 			$activities[] = $activity;
+
 		}
 
 		return array_reverse($activities);
@@ -77,6 +81,7 @@ final class PhoneTrackService
 	private function shiftTillGap(array $points): array
 	{
 		$gathered = [];
+		$reason = '';
 
 		$previous_timestamp = 0;
 
@@ -85,10 +90,11 @@ final class PhoneTrackService
 			$average_speed = $this->getAverage($gathered);
 			$upcoming_average = $this->getAverage(array_slice($points, $key, 10));
 
-			if ( // No movement in 2 minutes.
+			if ( // No movement in 10 minutes.
 				$previous_timestamp > 0
-				&& $point['timestamp'] - $previous_timestamp > 120
+				&& $point['timestamp'] - $previous_timestamp > (60 * 10)
 			) {
+				$reason = 'no movement';
 				break;
 			}
 
@@ -98,6 +104,7 @@ final class PhoneTrackService
 				&& $upcoming_average !== false // Do we keep moving in the future.
 				&& (abs($average_speed - $upcoming_average) >= 5 || $upcoming_average < 1) // And is the future average also different or 0
 			) {
+				$reason = 'changed by 5kmh';
 				break;
 			}
 
@@ -106,6 +113,7 @@ final class PhoneTrackService
 				&& $upcoming_average !== false
 				&& $upcoming_average < 1
 			) {
+				$reason = 'stop in future';
 				break;
 			}
 
@@ -121,6 +129,7 @@ final class PhoneTrackService
 
 		return [
 			'average' => $average_speed,
+			'reason' => $reason,
 			'slice' => $slice,
 			'remaining' => array_slice($points, count($gathered)),
 		];

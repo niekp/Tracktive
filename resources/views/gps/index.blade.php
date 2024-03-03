@@ -20,6 +20,7 @@
                     {{ $data->start->format('d-m-Y H:i') }} - {{ $data->stop->format('H:i') }}<br />
                     <table>
                         <tr><td>Snelheid:</td><td>{{ $data->average_speed_total }} km/u</td></tr>
+                        <tr style="display:none;"><td>Reden:</td><td>{{ $activity->reason }}</td></tr>
                     </table>
                 </p>
                 <a href="{{ route('gps.show', $key) }}" class="btn btn-primary">Bekijken</a>
