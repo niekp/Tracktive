@@ -38,8 +38,8 @@ final class ImportPhoneTrackCommand extends Command
 
 				if (
 					Activity::query()
-					->where('date', '>=', $activity->date->subMinute())
-					->where('date', '<=', $activity->date->addMinute())
+					->where('date', '>=', $activity->date->subMinutes(10))
+					->where('date', '<=', $activity->date->addMinutes(10))
 					->exists()
 				) {
 					return false;
