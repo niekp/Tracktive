@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Actions\ProcessActivityStatsAction;
+use App\Actions\RemoveInaccuracyAction;
 use App\Models\Activity;
 use Illuminate\Console\Command;
 
@@ -35,6 +36,7 @@ class ReprocessDataCommand extends Command
         foreach ($activities as $activity) {
             $this->info("Processing activity $activity->id");
 
+            (new RemoveInaccuracyAction)($activity);
             (new ProcessActivityStatsAction)($activity);
         }
 
