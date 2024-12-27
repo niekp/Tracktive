@@ -17,7 +17,41 @@ final class RemoveInaccuracyAction
     public function filterPoints(array $points): array
     {
         $filtered_points = [];
-        foreach ($points as $point) {
+
+		// Get speeds.
+		$speeds = [];
+		foreach ($points as $point) {
+			$duration = 0;
+			if (isset($previous_time)) {
+				$duration = abs(
+					$point->time->getTimestamp() - $previous_time->getTimestamp()
+				);
+			}
+
+			$previous_time = $point->time;
+
+			$speed = $duration ? round($point->difference / $duration * 3.6, 2) : 0;
+			$speeds[] = $speed;
+		}
+
+		$magnitude = 2.5;
+		$count = count($speeds);
+		$mean = array_sum($speeds) / $count; // Calculate the mean
+		$deviation = sqrt(
+			array_sum(
+				array_map(
+					static function ($x, $mean) {
+						return pow($x - $mean, 2);
+					},
+					$speeds,
+					array_fill(0, $count, $mean)
+				)
+			) / $count
+		) * $magnitude; // Calculate standard deviation and times by magnitude
+
+		$max_speed = $mean + $deviation;
+
+		foreach ($points as $point) {
             $duration = 0;
             if (isset($previous_time)) {
                 $duration = abs($point->time->getTimestamp() - $previous_time->getTimestamp());
@@ -25,11 +59,11 @@ final class RemoveInaccuracyAction
 
             $previous_time = $point->time;
 
-            // Filter out all points > 50km/u. This is a sports-tracker and i'm not that fast.
+            // Filter out all odd speeds.
             $speed = $duration ? round($point->difference / $duration * 3.6, 2) : 0;
-            if ($speed <= 50) {
+            if ($speed <= $max_speed) {
                 $filtered_points[] = $point;
-            }
+			}
         }
 
         return $filtered_points;
@@ -47,6 +81,8 @@ final class RemoveInaccuracyAction
 
         foreach ($gpx_file->tracks as $track) {
             foreach ($track->segments as $segment) {
+				// Pass the points through the filter twice.
+                $segment->points = $this->filterPoints($segment->points);
                 $segment->points = $this->filterPoints($segment->points);
             }
         }
