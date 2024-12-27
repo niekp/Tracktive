@@ -69,7 +69,7 @@ final class RemoveInaccuracyAction
         return $filtered_points;
     }
 
-    public function __invoke(Activity $activity): Activity
+    public function cleanup(Activity $activity, int $passes = 1): Activity
     {
         if (!$activity->gpx instanceof Gpx) {
             throw new \InvalidArgumentException('Activity doesn\'t have a GPX file yet');
@@ -77,15 +77,23 @@ final class RemoveInaccuracyAction
 
         libxml_use_internal_errors(true);
 
-        $gpx_file = phpGPX::load(Storage::path($activity->gpx->file));
+		$content = null;
 
-        foreach ($gpx_file->tracks as $track) {
-            foreach ($track->segments as $segment) {
-				// Pass the points through the filter twice.
-                $segment->points = $this->filterPoints($segment->points);
-                $segment->points = $this->filterPoints($segment->points);
-            }
-        }
+		for ($pass = 1; $pass <= $passes; $pass++) {
+			$gpx_file = $content
+				? phpGPX::parse($content)
+				: phpGPX::load(Storage::path($activity->gpx->file));
+
+			foreach ($gpx_file->tracks as $track) {
+				foreach ($track->segments as $segment) {
+					// Pass the points through the filter twice.
+					$segment->points = $this->filterPoints($segment->points);
+				}
+			}
+
+			$document = $gpx_file->toXML();
+			$content = $document->saveXML($document);
+		}
 
         $temp = tempnam(sys_get_temp_dir(), 'tracktive_');
         $gpx_file->save($temp, phpGPX::XML_FORMAT);
@@ -94,4 +102,11 @@ final class RemoveInaccuracyAction
 
         return $activity;
     }
+
+	public function __invoke(Activity $activity): Activity
+	{
+		$activity = $this->cleanup($activity, 3);
+
+		return $activity;
+	}
 }
