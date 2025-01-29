@@ -18,6 +18,7 @@ use Spatie\LaravelData\DataCollection;
  * @property ActivityData $data
  * @property DataCollection $points
  * @property string $image
+ * @property bool $favorite
  * @property Gpx $gpx
  */
 class Activity extends Model
@@ -30,12 +31,14 @@ class Activity extends Model
         'data',
         'points',
         'image',
+        'favorite',
     ];
 
     protected $casts = [
         'date' => 'datetime',
         'data' => ActivityData::class,
         'points' => DataCollection::class . ':' . Point::class,
+        'favorite' => 'boolean',
     ];
 
     public function gpxes(): HasMany

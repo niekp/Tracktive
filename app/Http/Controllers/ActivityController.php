@@ -147,6 +147,14 @@ final class ActivityController extends Controller
 
         $activity->image = $request->get('data');
         $activity->save();
-        return response()->json(['success' => 'success', 200]);
+        return response()->json(['success' => 'success']);
+    }
+
+    public function favorite(Activity $activity, Request $request)
+    {
+        $activity->favorite = $request->post('favorite') === true;
+        $activity->save();
+
+        return response()->json(['success' => 'success']);
     }
 }

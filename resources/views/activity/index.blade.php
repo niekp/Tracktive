@@ -1,5 +1,10 @@
 @extends('layouts.master')
 @section('title', 'Activiteiten')
+
+@section('scripts')
+    <script src="{{ asset('/js/activities.js') }}" type="text/javascript" charset="utf-8"></script>
+@endsection
+
 @section('content')
     @if (!$selected_persons && !$selected_type)
         <a class="btn btn-primary mb-2" data-bs-toggle="collapse" href="#filter" role="button" aria-expanded="false" aria-controls="filter" onclick="this.style.display = 'none';">Filteren</a>
@@ -39,7 +44,6 @@
                     </div>
                 </div>
 
-
                 <div class="row g-3 align-items-center">
                     <label class="col-sm-1"></label>
                     <div class="col-auto ms-2">
@@ -56,8 +60,17 @@
                 $data = $activity->getData();
             @endphp
             <div class="col">
-                <div class="card mb-3">
-                    <img class="card-img-top" src="{{ $activity->image }}" alt="Route">
+                <div class="card mb-3">                    
+                    <div class="position-relative">
+                        <img class="card-img-top" src="{{ $activity->image }}" alt="Route">
+                        <i
+                            class="fas fa-star position-absolute top-0 end-0 m-3"
+                            data-favorite-id="{{ $activity->id }}"
+                            data-favorite="{{$activity->favorite}}"
+                            style="color: {{ $activity->favorite ? 'gold' : 'gray' }};"
+                        ></i>
+                    </div>
+
                     <div class="card-body">
                         <h5 class="card-title">{{ $activity->type }}</h5>
                         <p class="card-text">
