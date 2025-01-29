@@ -33,7 +33,7 @@ final class ActivityController extends Controller
         }
 
         return view('activity.index', [
-            'activities' => $activities->get(),
+            'activities' => $activities->paginate(24),
             'types' => $types,
             'persons' => $persons,
             'selected_persons' => $request->get('person'),

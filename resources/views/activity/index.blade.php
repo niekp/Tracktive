@@ -74,4 +74,5 @@
             </div>
         @endforeach
     </div>
+    {{ $activities->links('pagination::bootstrap-4') }}
 @endsection
