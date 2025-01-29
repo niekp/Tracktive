@@ -82,6 +82,7 @@
                             class="fas fa-star position-absolute top-0 end-0 m-3"
                             data-favorite-id="{{ $activity->id }}"
                             data-favorite="{{$activity->favorite}}"
+                            attribute role="button"
                             style="color: {{ $activity->favorite ? 'gold' : 'gray' }};"
                         ></i>
                     </div>
