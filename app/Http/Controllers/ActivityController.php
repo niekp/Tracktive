@@ -31,6 +31,9 @@ final class ActivityController extends Controller
         if ($request->get('type')) {
             $activities->where('type', $request->get('type'));
         }
+        if ($request->get('favorite') == 1) {
+            $activities->where('favorite', true);
+        }
 
         return view('activity.index', [
             'activities' => $activities->paginate(24),
@@ -38,6 +41,7 @@ final class ActivityController extends Controller
             'persons' => $persons,
             'selected_persons' => $request->get('person'),
             'selected_type' => $request->get('type'),
+            'favorite' => $request->get('favorite') == 1,
         ]);
     }
 

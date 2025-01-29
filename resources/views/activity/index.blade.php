@@ -45,6 +45,21 @@
                 </div>
 
                 <div class="row g-3 align-items-center">
+                    <label class="col-sm-1">Favoriet</label>
+                    <div class="col-auto ms-2">
+                        <span>
+                            <input class="form-check-input"
+                                type="checkbox"
+                                name="favorite"
+                                value="1"
+                                id="favorite"
+                                {{ $favorite ? "checked='checked'" : '' }}
+                            />
+                        </span>
+                    </div>
+                </div>
+
+                <div class="row g-3 align-items-center">
                     <label class="col-sm-1"></label>
                     <div class="col-auto ms-2">
                         <button type="submit" class="btn btn-primary my-2">Filter</button>
