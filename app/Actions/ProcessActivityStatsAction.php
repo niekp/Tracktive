@@ -74,9 +74,9 @@ final class ProcessActivityStatsAction
             }
         }
 
-        $data->average_speed_active = round($data->distance / $data->seconds_active * 3.6, 2);
-        $data->average_speed_total = round($data->distance / ($data->seconds_active + $data->seconds_paused) * 3.6, 2);
-        $data->distance = round($data->distance / 1000, 2);
+        $data->average_speed_active = $data->seconds_active && $data->distance > 0 > 0 ? round($data->distance / $data->seconds_active * 3.6, 2) : 0;
+        $data->average_speed_total = $data->distance && ($data->seconds_active + $data->seconds_paused) ? round($data->distance / ($data->seconds_active + $data->seconds_paused) * 3.6, 2) : 0;
+        $data->distance = $data->distance ? round($data->distance / 1000, 2) : 0;
 
         $activity->data = $data;
         $activity->points = new DataCollection(Point::class, $points);
