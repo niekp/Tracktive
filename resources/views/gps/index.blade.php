@@ -1,5 +1,8 @@
 @extends('layouts.master')
 @section('title', 'Activiteiten')
+@section('styles')
+@include('_partials.map-styles')
+@endsection
 @section('scripts')
 @include('_partials.map-scripts')
 @endsection

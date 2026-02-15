@@ -1,95 +1,89 @@
 var config = document.querySelector("[data-configuration]");
 var activities = document.querySelectorAll("[data-container='coordinates']");
 
-var platform = new H.service.Platform({
-    apikey: config.dataset.hereApiKey,
-    app_id: config.dataset.hereAppId,
-    app_code: config.dataset.hereAppCode
-});
+// SVG icon helpers for Leaflet markers
+function createCircleIcon(color) {
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">' +
+        '<circle style="fill:' + color + ';stroke:#000000;stroke-width:1.25" cx="10" cy="10" r="9.4"></circle>' +
+        '</svg>';
+    return L.icon({
+        iconUrl: 'data:image/svg+xml;base64,' + btoa(svg),
+        iconSize: [20, 20],
+        iconAnchor: [10, 10],
+    });
+}
 
-
-var blue = new H.map.Icon('<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg2" width="20" height="20">\n' +
-    '<circle id="c2" style="fill:#36a2eb;stroke:#000000;stroke-width:1.25" cx="10" cy="10" r="9.4"></circle>\n' +
-    '</svg>\n');
-var green = new H.map.Icon('<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg2" width="20" height="20">\n' +
-    '<circle id="c2" style="fill:#4bc0c0;stroke:#000000;stroke-width:1.25" cx="10" cy="10" r="9.4"></circle>\n' +
-    '</svg>\n');
-var orange = new H.map.Icon('<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg2" width="20" height="20">\n' +
-    '<circle id="c2" style="fill:#ffcd56;stroke:#000000;stroke-width:1.25" cx="10" cy="10" r="9.4"></circle>\n' +
-    '</svg>\n');
+var blueIcon = createCircleIcon('#36a2eb');
+var greenIcon = createCircleIcon('#4bc0c0');
+var orangeIcon = createCircleIcon('#ffcd56');
 
 var map;
+var tileLayer;
+var routeBounds;
 
 // Activities
-activities.forEach(activity => {
-    var group = new H.map.Group();
-    var defaultLayers = platform.createDefaultLayers();
+activities.forEach(function (activity) {
+    var mapContainer = document.getElementById('mapContainer' + activity.dataset.mapContainer);
 
-    map = new H.Map(
-        document.getElementById('mapContainer' + activity.dataset.mapContainer),
-        defaultLayers.vector.normal.map,
-    );
+    map = L.map(mapContainer, {
+        preferCanvas: true,
+        zoomControl: activities.length === 1,
+        dragging: activities.length === 1,
+        scrollWheelZoom: activities.length === 1,
+        doubleClickZoom: activities.length === 1,
+        touchZoom: activities.length === 1,
+        boxZoom: activities.length === 1,
+        keyboard: activities.length === 1,
+    });
 
-    if (activities.length === 1) {
-        H.ui.UI.createDefault(map, defaultLayers);
-        new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
-    }
+    tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19,
+        crossOrigin: 'anonymous',
+    }).addTo(map);
 
     var startPoint = null;
-    var routeString = new H.geo.LineString();
+    var endPoint = null;
+    var latLngs = [];
 
-    activity.querySelectorAll("activity coord").forEach(coord => {
+    activity.querySelectorAll("activity coord").forEach(function (coord) {
         var latitude = parseFloat(coord.dataset.lat);
         var longitude = parseFloat(coord.dataset.long);
 
-        coords = { lat: latitude, lng: longitude };
-
-        routeString.pushLatLngAlt(latitude, longitude);
+        latLngs.push([latitude, longitude]);
 
         if (startPoint == null)
-            startPoint = coords;
-        endPoint = coords;
+            startPoint = [latitude, longitude];
+        endPoint = [latitude, longitude];
     });
 
     var color = randomColor({ luminosity: "dark" });
-    var routeOutline = new H.map.Polyline(routeString, {
-        style: {
-            lineWidth: 8,
-            strokeColor: hexToRgbA(color, 0.7),
-            lineTailCap: 'arrow-tail',
-            lineHeadCap: 'arrow-head'
-        }
-    });
 
-    var routeLine = new H.map.Polyline(routeString, {
-        style: {
-            strokeColor: '#ffffff',
-            lineWidth: 4,
-            lineDash: [0, 4],
-            lineTailCap: 'arrow-tail',
-            lineHeadCap: 'arrow-head',
-        }
-    });
+    // Route outline (wider, semi-transparent)
+    var routeOutline = L.polyline(latLngs, {
+        color: hexToRgbA(color, 0.7),
+        weight: 8,
+        lineCap: 'butt',
+        lineJoin: 'round',
+    }).addTo(map);
 
-    var startMarker = new H.map.Marker(startPoint, {icon: orange});
-    var endMarker = new H.map.Marker(endPoint, {icon: green});
+    // Route line (narrower, dashed white overlay)
+    L.polyline(latLngs, {
+        color: '#ffffff',
+        weight: 4,
+        dashArray: '0, 8',
+        lineCap: 'butt',
+        lineJoin: 'round',
+    }).addTo(map);
 
-    if (activities.length == 1)
-        group.addObjects([routeOutline, routeLine, startMarker, endMarker]);
-    else
-        group.addObjects([routeOutline, routeLine]);
+    if (activities.length == 1) {
+        L.marker(startPoint, { icon: orangeIcon }).addTo(map);
+        L.marker(endPoint, { icon: greenIcon }).addTo(map);
+    }
 
-    map.addObject(group);
-
-    var bounds = group.getBoundingBox();
-    bounds.a -= 0.002;
-    bounds.f -= 0.002;
-    bounds.b += 0.002;
-    bounds.c += 0.002;
-
-    map.getViewModel().setLookAtData({
-        bounds: bounds
-    });
+    // Fit map to route bounds with padding
+    routeBounds = routeOutline.getBounds().pad(0.05);
+    map.fitBounds(routeBounds);
 });
 
 function hexToRgbA(hex, alpha) {
@@ -108,31 +102,28 @@ function hexToRgbA(hex, alpha) {
     throw new Error('Bad Hex');
 }
 
+// Map capture for thumbnail generation
 if (activities.length === 1) {
-    var captured = false;
     if (config.dataset.captureId) {
-        map.getEngine().addEventListener('render', (evt) => {
-            if (map.getEngine() === evt.target) {
-                if (!captured) {
-                    map.capture(function (capturedCanvas) {
-                        fetch("/capture", {
-                            method: "POST",
-                            body: JSON.stringify({
-                                capture_id: config.dataset.captureId,
-                                data: capturedCanvas.toDataURL("image/png"),
-                            }),
-                            headers: {
-                                "Content-type": "application/json; charset=UTF-8",
-                                'X-CSRF-Token': document.querySelector('meta[name="_token"]').content,
-                            }
-                        }).then(function () {
-                            document.querySelectorAll(".mapContainer")[0].style.width = '100%';
-                            map.getViewPort().resize();
-                        });
-                    });
-                    captured = true;
-                }
-            }
+        // Wait for the initial tiles to load, then capture via leaflet-image
+        tileLayer.once('load', function () {
+            leafletImage(map, function (err, canvas) {
+                if (err || !canvas) return;
+                fetch("/capture", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        capture_id: config.dataset.captureId,
+                        data: canvas.toDataURL("image/png"),
+                    }),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8",
+                        'X-CSRF-Token': document.querySelector('meta[name="_token"]').content,
+                    }
+                }).then(function () {
+                    document.querySelectorAll(".mapContainer")[0].style.width = '100%';
+                    map.invalidateSize();
+                });
+            });
         });
     }
 }
@@ -143,26 +134,22 @@ if (activities.length === 1 && document.querySelector("[data-container='speeds']
 
     document.querySelector("[data-container='speeds']").addEventListener(
         "speed.hover",
-        function(event) {
-            if (placedMarkers) {
-                map.removeObjects(placedMarkers);
-                placedMarkers = [];
-            }
-
-            var group = new H.map.Group();
+        function (event) {
+            // Remove previously placed markers
+            placedMarkers.forEach(function (marker) {
+                map.removeLayer(marker);
+            });
+            placedMarkers = [];
 
             event.detail.forEach(function (index) {
-                coord = activities[0].querySelectorAll("coord")[index];
-                var marker = new H.map.Marker({
-                    lat: parseFloat(coord.dataset.lat),
-                    lng: parseFloat(coord.dataset.long)
-                }, {icon: blue});
+                var coord = activities[0].querySelectorAll("coord")[index];
+                var marker = L.marker(
+                    [parseFloat(coord.dataset.lat), parseFloat(coord.dataset.long)],
+                    { icon: blueIcon }
+                ).addTo(map);
 
-                group.addObject(marker);
-            })
-
-            placedMarkers.push(group);
-            map.addObject(group);
+                placedMarkers.push(marker);
+            });
         },
         false,
     );
