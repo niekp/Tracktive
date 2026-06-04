@@ -2,7 +2,7 @@
 
 return [
 
-    'trusted_ips' => array_map('trim', explode(',', env('TRUSTED_IPS', []))),
+    'trusted_ips' => array_filter(array_map('trim', explode(',', (string) env('TRUSTED_IPS', '')))),
 
     /*
     |--------------------------------------------------------------------------

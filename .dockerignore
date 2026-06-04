@@ -1,0 +1,35 @@
+.git
+.github
+.idea
+# Rebuilt fresh in the composer stage
+vendor
+# Stale compiled manifests — regenerated at runtime
+bootstrap/cache/*.php
+.vscode
+.fleet
+node_modules
+
+# Persistent data — bind-mounted at runtime, never baked into the image
+storage/app/gpx
+storage/app/db
+storage/app/download
+storage/app/public
+
+# Runtime-generated, recreated in the image
+storage/logs
+storage/clockwork
+storage/framework/cache/data
+storage/framework/sessions
+storage/framework/views
+
+# Secrets / local
+.env
+.env.*
+auth.json
+
+tests
+*.md
+todo.txt
+docker-compose.yml
+Dockerfile
+.dockerignore
